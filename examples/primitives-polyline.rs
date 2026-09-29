@@ -5,16 +5,17 @@
 use embedded_graphics as eg;
 use embedded_graphics_simulator as eg_sim;
 
-const PADDING: i32 = 8;
+type ColorType = eg::pixelcolor::Rgb888;
 
 fn draw_polyline<DrawTarget>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
-    DrawTarget: eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb888>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
 {
     use eg::prelude::*;
+    const PADDING: i32 = 8;
     let bbox = target.bounding_box();
     let h = bbox.size.height as i32;
-    let line_style = eg::primitives::PrimitiveStyle::with_stroke(eg::pixelcolor::Rgb888::GREEN, 7);
+    let line_style = eg::primitives::PrimitiveStyle::with_stroke(ColorType::GREEN, 7);
     let points = [
         Point::new(PADDING, h / 2),
         Point::new(50, h / 2),
@@ -36,7 +37,7 @@ where
 
 fn main() -> Result<(), core::convert::Infallible> {
     use eg::prelude::*;
-    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(176, 170));
+    let mut target = eg_sim::SimulatorDisplay::<ColorType>::new(Size::new(176, 170));
     draw_polyline(&mut target)?;
     eg_sim::Window::new("Polyline", &eg_sim::OutputSettings::default()).show_static(&target);
     Ok(())

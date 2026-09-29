@@ -6,20 +6,22 @@ use core::convert::Infallible;
 use embedded_graphics as eg;
 use embedded_graphics_simulator as eg_sim;
 
+type ColorType = eg::pixelcolor::Rgb888;
+
 fn draw_shapes<DrawTarget>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
-    DrawTarget: eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb888>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
 {
     use eg::prelude::*;
     const SLOT_WIDTH: i32 = 130;
     const SLOT_HEIGHT: i32 = 110;
     let style1 = eg::primitives::PrimitiveStyleBuilder::new()
-        .stroke_color(eg::pixelcolor::Rgb888::MAGENTA).stroke_width(1).build();
+        .stroke_color(ColorType::MAGENTA).stroke_width(1).build();
     let style2 = eg::primitives::PrimitiveStyleBuilder::new()
-        .fill_color(eg::pixelcolor::Rgb888::YELLOW).build();
+        .fill_color(ColorType::YELLOW).build();
     let style3 = eg::primitives::PrimitiveStyleBuilder::new()
-        .stroke_color(eg::pixelcolor::Rgb888::RED).stroke_width(1)
-        .fill_color(eg::pixelcolor::Rgb888::GREEN).build();
+        .stroke_color(ColorType::RED).stroke_width(1)
+        .fill_color(ColorType::GREEN).build();
     let styles = [style1, style2, style3];
     let mut offset = Point::new(8, 8);
     for style in &styles {
@@ -43,7 +45,7 @@ where
 
 fn main() -> Result<(), Infallible> {
     use eg::prelude::*;
-    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(380, 220));
+    let mut target = eg_sim::SimulatorDisplay::<ColorType>::new(Size::new(380, 220));
     draw_shapes(&mut target)?;
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(1).build();
     eg_sim::Window::new("Filled primitives", &output_settings).show_static(&target);
