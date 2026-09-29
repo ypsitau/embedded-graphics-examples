@@ -3,74 +3,49 @@
 //! This example demonstrates the different fill and stroke styles available for primitives.
 
 use core::convert::Infallible;
-use embedded_graphics::{
-    pixelcolor::Rgb888,
-    prelude::*,
-    primitives::{
-        Circle, CornerRadii, Ellipse, PrimitiveStyle, PrimitiveStyleBuilder, Rectangle,
-        RoundedRectangle, Triangle,
-    },
-};
-use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
+use embedded_graphics as eg;
+use embedded_graphics_simulator as eg_sim;
 
-static CIRCLE_SIZE: i32 = 65;
-static ELLIPSE_SIZE: Size = Size::new(90, 65);
-
-fn draw_shapes<T>(target: &mut T, style: PrimitiveStyle<Rgb888>) -> Result<(), T::Error>
+fn draw_shapes<DrawTarget>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
-    T: DrawTarget<Color = Rgb888>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb888>,
 {
-    Circle::new(Point::new(0, 0), CIRCLE_SIZE as u32)
-        .into_styled(style)
-        .draw(target)?;
-
-    Rectangle::new(Point::new(105, 0), Size::new(64, 64))
-        .into_styled(style)
-        .draw(target)?;
-
-    Triangle::new(Point::new(33, 0), Point::new(0, 64), Point::new(64, 64))
-        .translate(Point::new(96 * 2 + 16, 0))
-        .into_styled(style)
-        .draw(target)?;
-
-    Ellipse::new(Point::new(24, 108), ELLIPSE_SIZE)
-        .into_styled(style)
-        .draw(target)?;
-
-    RoundedRectangle::new(
-        Rectangle::new(Point::new(32, 0), Size::new(64, 64)),
-        CornerRadii::new(Size::new(16, 16)),
-    )
-    .translate(Point::new(96 + 24, 108))
-    .into_styled(style)
-    .draw(target)
+    use eg::prelude::*;
+    const SLOT_WIDTH: i32 = 130;
+    const SLOT_HEIGHT: i32 = 110;
+    let style1 = eg::primitives::PrimitiveStyleBuilder::new()
+        .stroke_color(eg::pixelcolor::Rgb888::MAGENTA).stroke_width(1).build();
+    let style2 = eg::primitives::PrimitiveStyleBuilder::new()
+        .fill_color(eg::pixelcolor::Rgb888::YELLOW).build();
+    let style3 = eg::primitives::PrimitiveStyleBuilder::new()
+        .stroke_color(eg::pixelcolor::Rgb888::RED).stroke_width(1)
+        .fill_color(eg::pixelcolor::Rgb888::GREEN).build();
+    let styles = [style1, style2, style3];
+    let mut offset = Point::new(8, 8);
+    for style in &styles {
+        let style = *style;
+        eg::primitives::Circle::new(Point::new(0, 0), 65)
+            .translate(offset).into_styled(style).draw(target)?;
+        eg::primitives::Rectangle::new(Point::new(0, 0), Size::new(64, 64))
+            .translate(offset + Point::new(SLOT_WIDTH, 0)).into_styled(style).draw(target)?;
+        eg::primitives::Triangle::new(Point::new(33, 0), Point::new(0, 64), Point::new(64, 64))
+            .translate(offset + Point::new(SLOT_WIDTH * 2, 0)).into_styled(style).draw(target)?;
+        eg::primitives::Ellipse::new(Point::new(0, 0), Size::new(90, 65))
+            .translate(offset + Point::new(0, SLOT_HEIGHT)).into_styled(style).draw(target)?;
+        eg::primitives::RoundedRectangle::new(
+            eg::primitives::Rectangle::new(Point::new(0, 0), Size::new(64, 64)),
+            eg::primitives::CornerRadii::new(Size::new(16, 16)),
+        ).translate(offset + Point::new(SLOT_WIDTH, SLOT_HEIGHT)).into_styled(style).draw(target)?;
+        offset += Point::new(16, 16);
+    }
+    Ok(())
 }
 
 fn main() -> Result<(), Infallible> {
-    let mut display: SimulatorDisplay<Rgb888> = SimulatorDisplay::new(Size::new(325, 220));
-
-    let stroke = PrimitiveStyle::with_stroke(Rgb888::MAGENTA, 1);
-
-    let stroke_off_fill_off = PrimitiveStyleBuilder::new()
-        .stroke_color(Rgb888::RED)
-        .stroke_width(1)
-        .fill_color(Rgb888::GREEN)
-        .build();
-
-    let stroke_off_fill_on = PrimitiveStyle::with_fill(Rgb888::YELLOW);
-
-    draw_shapes(&mut display.translated(Point::new(8, 8)), stroke)?;
-    draw_shapes(
-        &mut display.translated(Point::new(24, 24)),
-        stroke_off_fill_on,
-    )?;
-    draw_shapes(
-        &mut display.translated(Point::new(40, 40)),
-        stroke_off_fill_off,
-    )?;
-
-    let output_settings = OutputSettingsBuilder::new().scale(1).build();
-    Window::new("Filled primitives", &output_settings).show_static(&display);
-
+    use eg::prelude::*;
+    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(380, 220));
+    draw_shapes(&mut target)?;
+    let output_settings = eg_sim::OutputSettingsBuilder::new().scale(1).build();
+    eg_sim::Window::new("Filled primitives", &output_settings).show_static(&target);
     Ok(())
 }

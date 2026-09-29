@@ -36,7 +36,7 @@ where
 
 fn main() -> Result<(), core::convert::Infallible> {
     use eg::prelude::*;
-    let mut target: eg_sim::SimulatorDisplay<eg::pixelcolor::Rgb888> = eg_sim::SimulatorDisplay::new(Size::new(176, 170));
+    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(176, 170));
     draw_polyline(&mut target)?;
     eg_sim::Window::new("Polyline", &eg_sim::OutputSettings::default()).show_static(&target);
     Ok(())
