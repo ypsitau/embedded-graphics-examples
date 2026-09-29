@@ -2,22 +2,19 @@
 //!
 //! This example draws a crude "heartbeat" shape using the `Polyline` primitive
 
-use embedded_graphics::{
-    pixelcolor::Rgb888,
-    prelude::*,
-    primitives::{Polyline, PrimitiveStyle},
-};
-use embedded_graphics_simulator::{OutputSettings, SimulatorDisplay, Window};
+use embedded_graphics as eg;
+use embedded_graphics_simulator as eg_sim;
 
 const PADDING: i32 = 8;
 
-fn main() -> Result<(), core::convert::Infallible> {
-    let (w, h) = (176i32, 256i32);
-
-    let mut display: SimulatorDisplay<Rgb888> = SimulatorDisplay::new(Size::new(w as u32, 170));
-
-    let line_style = PrimitiveStyle::with_stroke(Rgb888::GREEN, 7);
-
+fn draw_polyline<DrawTarget>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
+where
+    DrawTarget: eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb888>,
+{
+    use eg::prelude::*;
+    let bbox = target.bounding_box();
+    let h = bbox.size.height as i32;
+    let line_style = eg::primitives::PrimitiveStyle::with_stroke(eg::pixelcolor::Rgb888::GREEN, 7);
     let points = [
         Point::new(PADDING, h / 2),
         Point::new(50, h / 2),
@@ -31,11 +28,16 @@ fn main() -> Result<(), core::convert::Infallible> {
         Point::new(160, h / 2),
     ];
 
-    Polyline::new(&points)
+    eg::primitives::Polyline::new(&points)
         .into_styled(line_style)
-        .draw(&mut display)?;
+        .draw(target)?;
+    Ok(())
+}
 
-    Window::new("Polyline", &OutputSettings::default()).show_static(&display);
-
+fn main() -> Result<(), core::convert::Infallible> {
+    use eg::prelude::*;
+    let mut target: eg_sim::SimulatorDisplay<eg::pixelcolor::Rgb888> = eg_sim::SimulatorDisplay::new(Size::new(176, 170));
+    draw_polyline(&mut target)?;
+    eg_sim::Window::new("Polyline", &eg_sim::OutputSettings::default()).show_static(&target);
     Ok(())
 }

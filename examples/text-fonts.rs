@@ -6,9 +6,9 @@
 use embedded_graphics as eg;
 use embedded_graphics_simulator as eg_sim;
 
-fn draw_text<Display>(display: &mut Display) -> Result<(), Display::Error>
+fn draw_text<DrawTarget>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
-    Display: eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor>,
 {
     const LINE_SPACING: i32 = 4;
     use eg::prelude::*;
@@ -26,11 +26,11 @@ where
         pt.y += font.character_size.height as i32;
         let mut character_style = eg::mono_font::MonoTextStyleBuilder::new()
             .font(font).text_color(eg::pixelcolor::BinaryColor::On).build();
-        eg::text::Text::new(text, pt, character_style).draw(display)?;
+        eg::text::Text::new(text, pt, character_style).draw(target)?;
         pt.y += font.character_size.height as i32 + LINE_SPACING;
         let mut character_style = eg::mono_font::MonoTextStyleBuilder::new()
             .font(font).text_color(eg::pixelcolor::BinaryColor::Off).background_color(eg::pixelcolor::BinaryColor::On).build();
-        eg::text::Text::new(text, pt, character_style).draw(display)?;
+        eg::text::Text::new(text, pt, character_style).draw(target)?;
         pt.y += LINE_SPACING;
     }
     Ok(())
@@ -38,9 +38,9 @@ where
 
 fn main() -> Result<(), core::convert::Infallible> {
     use eg::prelude::*;
-    let mut display = eg_sim::SimulatorDisplay::<eg::pixelcolor::BinaryColor>::new(Size::new(350, 240));
-    draw_text(&mut display)?;
+    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::BinaryColor>::new(Size::new(350, 240));
+    draw_text(&mut target)?;
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
-    eg_sim::Window::new("Fonts", &output_settings).show_static(&display);
+    eg_sim::Window::new("Fonts", &output_settings).show_static(&target);
     Ok(())
 }
