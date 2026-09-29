@@ -5,6 +5,7 @@
 //! check out the [embedded-text repository](https://github.com/embedded-graphics/embedded-text).
 
 use embedded_graphics as eg;
+use embedded_graphics::mono_font::ascii as eg_fonts;
 use embedded_graphics_simulator as eg_sim;
 use embedded_text as embtext;
 
@@ -16,7 +17,7 @@ where
 {
     use eg::prelude::*;
     let character_style = eg::mono_font::MonoTextStyleBuilder::new()
-        .font(&eg::mono_font::ascii::FONT_6X10).text_color(ColorType::On).build();
+        .font(&eg_fonts::FONT_6X10).text_color(ColorType::On).build();
     let textbox_style = embtext::style::TextBoxStyleBuilder::new()
         .alignment(embtext::alignment::HorizontalAlignment::Center)
         .vertical_alignment(embtext::alignment::VerticalAlignment::Middle).build();

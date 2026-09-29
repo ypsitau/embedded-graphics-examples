@@ -4,6 +4,7 @@
 //! [embedded-graphics documentation](https://docs.rs/embedded-graphics).
 
 use embedded_graphics as eg;
+use embedded_graphics::mono_font::ascii as eg_fonts;
 use embedded_graphics_simulator as eg_sim;
 
 type ColorType = eg::pixelcolor::BinaryColor;
@@ -15,13 +16,13 @@ where
     const LINE_SPACING: i32 = 4;
     use eg::prelude::*;
     let entries = [
-        ("Hello World! - FONT_4X6", &eg::mono_font::ascii::FONT_4X6),
-        ("Hello World! - FONT_5X8", &eg::mono_font::ascii::FONT_5X8),
-        ("Hello World! - FONT_6X12", &eg::mono_font::ascii::FONT_6X12),
-        ("Hello World! - FONT_7X13", &eg::mono_font::ascii::FONT_7X13),
-        ("Hello World! - FONT_8X13", &eg::mono_font::ascii::FONT_8X13),
-        ("Hello World! - FONT_9X15", &eg::mono_font::ascii::FONT_9X15),
-        ("Hello World! - FONT_10X20", &eg::mono_font::ascii::FONT_10X20),
+        ("Hello World! - FONT_4X6", &eg_fonts::FONT_4X6),
+        ("Hello World! - FONT_5X8", &eg_fonts::FONT_5X8),
+        ("Hello World! - FONT_6X12", &eg_fonts::FONT_6X12),
+        ("Hello World! - FONT_7X13", &eg_fonts::FONT_7X13),
+        ("Hello World! - FONT_8X13", &eg_fonts::FONT_8X13),
+        ("Hello World! - FONT_9X15", &eg_fonts::FONT_9X15),
+        ("Hello World! - FONT_10X20", &eg_fonts::FONT_10X20),
     ];
     let mut pt = Point::new(15, 4);
     for (text, font) in entries.iter() {
