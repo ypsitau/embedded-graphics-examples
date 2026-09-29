@@ -5,16 +5,18 @@
 use embedded_graphics as eg;
 use embedded_graphics_simulator as eg_sim;
 
+type ColorType = eg::pixelcolor::Rgb888;
+
 fn draw_text<Display>(display: &mut Display) -> Result<(), Display::Error>
 where
-    Display: eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb888>,
+    Display: eg::draw_target::DrawTarget<Color = ColorType>,
 {
     use eg::prelude::*;
     let bounding_box = display.bounding_box();
 
     let character_style = eg::mono_font::MonoTextStyleBuilder::new()
         .font(&eg::mono_font::ascii::FONT_8X13)
-        .text_color(eg::pixelcolor::Rgb888::CSS_TOMATO).build();
+        .text_color(ColorType::CSS_TOMATO).build();
 
     let text_style = eg::text::TextStyleBuilder::new()
         .alignment(eg::text::Alignment::Left).baseline(eg::text::Baseline::Top).build();
@@ -36,7 +38,7 @@ where
 
 fn main() -> Result<(), core::convert::Infallible> {
     use eg::prelude::*;
-    let mut display = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(512, 128));
+    let mut display = eg_sim::SimulatorDisplay::<ColorType>::new(Size::new(512, 128));
     draw_text(&mut display)?;
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
     eg_sim::Window::new("Text alignment", &output_settings).show_static(&display);

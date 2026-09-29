@@ -6,9 +6,11 @@
 use embedded_graphics as eg;
 use embedded_graphics_simulator as eg_sim;
 
+type ColorType = eg::pixelcolor::BinaryColor;
+
 fn draw_text<DrawTarget>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
-    DrawTarget: eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
 {
     const LINE_SPACING: i32 = 4;
     use eg::prelude::*;
@@ -24,12 +26,12 @@ where
     let mut pt = Point::new(15, 4);
     for (text, font) in entries.iter() {
         pt.y += font.character_size.height as i32;
-        let mut character_style = eg::mono_font::MonoTextStyleBuilder::new()
-            .font(font).text_color(eg::pixelcolor::BinaryColor::On).build();
+        let character_style = eg::mono_font::MonoTextStyleBuilder::new()
+            .font(font).text_color(ColorType::On).build();
         eg::text::Text::new(text, pt, character_style).draw(target)?;
         pt.y += font.character_size.height as i32 + LINE_SPACING;
-        let mut character_style = eg::mono_font::MonoTextStyleBuilder::new()
-            .font(font).text_color(eg::pixelcolor::BinaryColor::Off).background_color(eg::pixelcolor::BinaryColor::On).build();
+        let character_style = eg::mono_font::MonoTextStyleBuilder::new()
+            .font(font).text_color(ColorType::Off).background_color(ColorType::On).build();
         eg::text::Text::new(text, pt, character_style).draw(target)?;
         pt.y += LINE_SPACING;
     }
@@ -38,7 +40,7 @@ where
 
 fn main() -> Result<(), core::convert::Infallible> {
     use eg::prelude::*;
-    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::BinaryColor>::new(Size::new(350, 240));
+    let mut target = eg_sim::SimulatorDisplay::<ColorType>::new(Size::new(350, 240));
     draw_text(&mut target)?;
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
     eg_sim::Window::new("Fonts", &output_settings).show_static(&target);
