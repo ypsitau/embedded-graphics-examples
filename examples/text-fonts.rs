@@ -4,8 +4,8 @@
 //! [embedded-graphics documentation](https://docs.rs/embedded-graphics).
 
 use embedded_graphics as eg;
-use embedded_graphics::mono_font::ascii as eg_fonts;
 use embedded_graphics_simulator as eg_sim;
+use embedded_graphics::mono_font::ascii as eg_fonts;
 
 type ColorType = eg::pixelcolor::BinaryColor;
 

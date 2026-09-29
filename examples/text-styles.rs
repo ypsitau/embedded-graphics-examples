@@ -4,6 +4,7 @@
 
 use embedded_graphics as eg;
 use embedded_graphics_simulator as eg_sim;
+use embedded_graphics::mono_font::ascii as eg_fonts;
 
 type ColorType = eg::pixelcolor::Rgb888;
 
@@ -12,9 +13,9 @@ where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
 {
     use eg::prelude::*;
-    let font = &eg::mono_font::ascii::FONT_8X13; 
-    let font_bold = &eg::mono_font::ascii::FONT_8X13_BOLD; 
-    let font_italic = &eg::mono_font::ascii::FONT_8X13_ITALIC; 
+    let font = &eg_fonts::FONT_8X13; 
+    let font_bold = &eg_fonts::FONT_8X13_BOLD; 
+    let font_italic = &eg_fonts::FONT_8X13_ITALIC; 
     let character_style_normal = eg::mono_font::MonoTextStyleBuilder::new()
         .font(font).text_color(ColorType::WHITE).build();
     // First line
