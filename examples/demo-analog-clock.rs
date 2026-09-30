@@ -8,15 +8,14 @@
 
 use chrono::{Local, Timelike};
 use core::f32::consts::PI;
+use embedded_graphics as eg;
+use embedded_graphics_simulator as eg_sim;
+use embedded_graphics::prelude::*;
 use embedded_graphics::{
     mono_font::{ascii::FONT_9X15, MonoTextStyle},
     pixelcolor::BinaryColor,
-    prelude::*,
     primitives::{Circle, Line, PrimitiveStyle, PrimitiveStyleBuilder, Rectangle},
     text::Text,
-};
-use embedded_graphics_simulator::{
-    OutputSettingsBuilder, SimulatorDisplay, SimulatorEvent, Window,
 };
 use std::{thread, time::Duration};
 
@@ -62,9 +61,9 @@ fn create_face(target: &impl DrawTarget) -> Circle {
 }
 
 /// Draws a circle and 12 graduations as a simple clock face.
-fn draw_face<D>(target: &mut D, clock_face: &Circle) -> Result<(), D::Error>
+fn draw_face<DrawTarget>(target: &mut DrawTarget, clock_face: &Circle) -> Result<(), DrawTarget::Error>
 where
-    D: DrawTarget<Color = BinaryColor>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = BinaryColor>,
 {
     // Draw the outer face.
     (*clock_face)
@@ -88,14 +87,10 @@ where
 }
 
 /// Draws a clock hand.
-fn draw_hand<D>(
-    target: &mut D,
-    clock_face: &Circle,
-    angle: f32,
-    length_delta: i32,
-) -> Result<(), D::Error>
+fn draw_hand<DrawTarget>(target: &mut DrawTarget, clock_face: &Circle, angle: f32, length_delta: i32)
+    -> Result<(), DrawTarget::Error>
 where
-    D: DrawTarget<Color = BinaryColor>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = BinaryColor>,
 {
     let end = polar(clock_face, angle, length_delta);
 
@@ -105,14 +100,10 @@ where
 }
 
 /// Draws a decorative circle on the second hand.
-fn draw_second_decoration<D>(
-    target: &mut D,
-    clock_face: &Circle,
-    angle: f32,
-    length_delta: i32,
-) -> Result<(), D::Error>
+fn draw_second_decoration<DrawTarget>(target: &mut DrawTarget, clock_face: &Circle, angle: f32, length_delta: i32)
+    -> Result<(), DrawTarget::Error>
 where
-    D: DrawTarget<Color = BinaryColor>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = BinaryColor>,
 {
     let decoration_position = polar(clock_face, angle, length_delta);
 
@@ -129,13 +120,10 @@ where
 }
 
 /// Draw digital clock just above center with black text on a white background
-fn draw_digital_clock<D>(
-    target: &mut D,
-    clock_face: &Circle,
-    time_str: &str,
-) -> Result<(), D::Error>
+fn draw_digital_clock<DrawTarget>(target: &mut DrawTarget, clock_face: &Circle, time_str: &str)
+    -> Result<(), DrawTarget::Error>
 where
-    D: DrawTarget<Color = BinaryColor>,
+    DrawTarget: eg::draw_target::DrawTarget<Color = BinaryColor>,
 {
     // Create a styled text object for the time text.
     let mut text = Text::new(
@@ -168,13 +156,23 @@ where
 }
 
 fn main() -> Result<(), core::convert::Infallible> {
-    let mut display = SimulatorDisplay::<BinaryColor>::new(Size::new(256, 256));
+    let mut target = eg_sim::SimulatorDisplay::<BinaryColor>::new(Size::new(256, 256));
 
-    let output_settings = OutputSettingsBuilder::new().scale(2).build();
-    let mut window = Window::new("Clock", &output_settings);
+    let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
+    let mut window = eg_sim::Window::new("Clock", &output_settings);
 
-    let clock_face = create_face(&display);
+    run_clock(&mut target, |target| {
+        window.update(target);
+        window.events().any(|e| e == eg_sim::SimulatorEvent::Quit)
+    })
+}
 
+fn run_clock<DrawTarget, FuncInterval>(target: &mut DrawTarget, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
+where
+    DrawTarget: eg::draw_target::DrawTarget<Color = BinaryColor>,
+    FuncInterval: FnMut(&mut DrawTarget) -> bool,
+{
+    let clock_face = create_face(target);
     'running: loop {
         let time = Local::now();
 
@@ -192,28 +190,23 @@ fn main() -> Result<(), core::convert::Infallible> {
             time.second()
         );
 
-        display.clear(BinaryColor::Off)?;
+        target.clear(BinaryColor::Off)?;
 
-        draw_face(&mut display, &clock_face)?;
-        draw_hand(&mut display, &clock_face, hours_radians, -60)?;
-        draw_hand(&mut display, &clock_face, minutes_radians, -30)?;
-        draw_hand(&mut display, &clock_face, seconds_radians, 0)?;
-        draw_second_decoration(&mut display, &clock_face, seconds_radians, -20)?;
+        draw_face(target, &clock_face)?;
+        draw_hand(target, &clock_face, hours_radians, -60)?;
+        draw_hand(target, &clock_face, minutes_radians, -30)?;
+        draw_hand(target, &clock_face, seconds_radians, 0)?;
+        draw_second_decoration(target, &clock_face, seconds_radians, -20)?;
 
         // Draw digital clock just above center.
-        draw_digital_clock(&mut display, &clock_face, &digital_clock_text)?;
+        draw_digital_clock(target, &clock_face, &digital_clock_text)?;
 
         // Draw a small circle over the hands in the center of the clock face.
         // This has to happen after the hands are drawn so they're covered up.
         Circle::with_center(clock_face.center(), 9)
             .into_styled(PrimitiveStyle::with_fill(BinaryColor::On))
-            .draw(&mut display)?;
-
-        window.update(&display);
-
-        if window.events().any(|e| e == SimulatorEvent::Quit) {
-            break 'running Ok(());
-        }
+            .draw(target)?;
+        if func_interval(target) { break 'running Ok(()); }
         thread::sleep(Duration::from_millis(50));
     }
 }
