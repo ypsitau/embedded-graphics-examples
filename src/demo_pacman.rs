@@ -2,12 +2,14 @@
 //!
 //! An example displaying an animated Pacman.
 use embedded_graphics as eg;
+use embedded_hal as hal;
 
-pub fn run<ColorType, DrawTarget, FuncInterval>(target: &mut DrawTarget, mut func_interval: FuncInterval)
+pub fn run<ColorType, DrawTarget, DelayNs, FuncInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut func_interval: FuncInterval)
     -> Result<(), DrawTarget::Error>
 where
     ColorType: eg::pixelcolor::RgbColor,
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>, 
+    DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
     const STEPS: i32 = 10;
@@ -29,6 +31,7 @@ where
             .into_styled(style_eye).draw(target)?;
         istep = (istep + 1) % (2 * STEPS + 1);
         if func_interval(target) { break; }
+        delay.delay_ms(50); // 50 ms delay
     }
     Ok(())
 }
