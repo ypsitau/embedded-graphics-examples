@@ -12,5 +12,6 @@ fn main() -> Result<(), std::convert::Infallible> {
     examples::demo_pacman::run(&mut target, thread_delay::ThreadDelay, |target| {
         window.update(target);
         window.events().any(|e| e == eg_sim::SimulatorEvent::Quit)
-    })
+    });
+    Ok(())
 }

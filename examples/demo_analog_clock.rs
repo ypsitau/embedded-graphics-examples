@@ -12,5 +12,6 @@ fn main() -> Result<(), core::convert::Infallible> {
     examples::demo_analog_clock::run(&mut target, thread_delay::ThreadDelay, |target| {
         window.update(target);
         window.events().any(|e| e == eg_sim::SimulatorEvent::Quit)
-    })
+    });
+    Ok(())
 }
