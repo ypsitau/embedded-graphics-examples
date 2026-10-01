@@ -13,20 +13,20 @@ use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 
 use embedded_graphics::mono_font::ascii as fonts;
-type ColorType = eg::pixelcolor::BinaryColor;
-
 use embedded_hal as hal;
 
-/// The margin between the clock face and the display border.
-const MARGIN: u32 = 10;
+type ColorType = eg::pixelcolor::BinaryColor;
 
-pub fn run<DrawTarget, DelayNs, FuncInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
+pub fn run<DrawTarget, DelayNs, FuncInterval>(target: &mut DrawTarget,
+    mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
     use chrono::Timelike as _;
+    /// The margin between the clock face and the display border.
+    const MARGIN: u32 = 10;
     // The draw target bounding box can be used to determine the size of the display.
     let bounding_box = target.bounding_box();
     let diameter = bounding_box.size.width.min(bounding_box.size.height) - 2 * MARGIN;

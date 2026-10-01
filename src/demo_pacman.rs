@@ -2,18 +2,18 @@
 //!
 //! An example displaying an animated Pacman.
 use embedded_graphics as eg;
+use embedded_graphics::prelude::*;
 use embedded_hal as hal;
 
 pub fn run<ColorType, DrawTarget, DelayNs, FuncInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut func_interval: FuncInterval)
     -> Result<(), DrawTarget::Error>
 where
-    ColorType: eg::pixelcolor::RgbColor,
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>, 
+    ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
     const STEPS: i32 = 10;
-    use eg::prelude::*;
     // Create styles used by the drawing operations.
     let style_sector = eg::primitives::PrimitiveStyleBuilder::new()
         .stroke_color(ColorType::BLACK).stroke_width(2).fill_color(ColorType::YELLOW).build();
