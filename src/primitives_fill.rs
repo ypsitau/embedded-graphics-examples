@@ -3,13 +3,13 @@
 //! This example demonstrates the different fill and stroke styles available for primitives.
 
 use embedded_graphics as eg;
+use embedded_graphics::prelude::*;
 
 pub fn show<DrawTarget, ColorType>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor
 {
-    use eg::prelude::*;
     const SLOT_WIDTH: i32 = 110;
     const SLOT_HEIGHT: i32 = 110;
     let style1 = eg::primitives::PrimitiveStyleBuilder::new()
