@@ -20,14 +20,15 @@ where
     let style_eye = eg::primitives::PrimitiveStyleBuilder::new()
         .stroke_color(ColorType::BLACK).stroke_width(1).fill_color(ColorType::BLACK).build();
     let mut istep: i32 = 0;
+    let center = target.bounding_box().center();
     loop {
         target.clear(ColorType::WHITE)?;
         let deg_open = ((30 * (istep - STEPS).abs()) as f32) / STEPS as f32;
         let angle_start = Angle::from_degrees(deg_open);
         let angle_sweep = Angle::from_degrees(360.0 - 2.0 * deg_open);
-        eg::primitives::Sector::new(Point::new(2, 2), 61, angle_start, angle_sweep)
+        eg::primitives::Sector::with_center(center, 61, angle_start, angle_sweep)
             .into_styled(style_sector).draw(target)?;
-        eg::primitives::Circle::new(Point::new(36, 16), 5)
+        eg::primitives::Circle::with_center(center + Point::new(4, -16), 5)
             .into_styled(style_eye).draw(target)?;
         istep = (istep + 1) % (2 * STEPS + 1);
         if func_interval(target) { break; }
