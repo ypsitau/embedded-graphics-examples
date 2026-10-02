@@ -2,6 +2,7 @@
 pub mod demo_analog_clock;
 pub mod demo_digital_clock;
 pub mod demo_pacman;
+pub mod demo_progress;
 pub mod hello_world;
 pub mod image_bmp;
 pub mod image_sub_image;
