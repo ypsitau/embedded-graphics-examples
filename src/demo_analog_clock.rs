@@ -11,9 +11,9 @@ use heapless::String;
 use core::f32::consts::PI;
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
+use embedded_hal as hal;
 
 use embedded_graphics::mono_font::ascii as fonts;
-use embedded_hal as hal;
 
 pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
