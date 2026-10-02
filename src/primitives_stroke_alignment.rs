@@ -46,35 +46,37 @@ where
     loop {
         target.clear(ColorType::BLACK)?;
         let tbl = {
-            let style_base = eg::primitives::PrimitiveStyleBuilder::new()
-                .stroke_color(ColorType::CYAN).stroke_width(15).build();
+            use eg::primitives::StrokeAlignment as SA;
+            let style_builder = eg::primitives::PrimitiveStyleBuilder::new()
+                .stroke_color(ColorType::CYAN).stroke_width(15);
             [
-                ("Inside", eg::primitives::PrimitiveStyleBuilder::from(&style_base)
-                    .stroke_alignment(eg::primitives::StrokeAlignment::Inside).build(),),
-                ("Center\n(Default)", eg::primitives::PrimitiveStyleBuilder::from(&style_base)
-                    .stroke_alignment(eg::primitives::StrokeAlignment::Center).build(),),
-                ("Outside", eg::primitives::PrimitiveStyleBuilder::from(&style_base)
-                    .stroke_alignment(eg::primitives::StrokeAlignment::Outside).build(),),
+                ("Inside",              style_builder.stroke_alignment(SA::Inside).build()),
+                ("Center\n(Default)",   style_builder.stroke_alignment(SA::Center).build()),
+                ("Outside",             style_builder.stroke_alignment(SA::Outside).build()),
             ]
         };
         let style_shape_outline = eg::primitives::PrimitiveStyleBuilder::new()
             .stroke_color(ColorType::RED).stroke_width(1).build();
         let character_style = eg::mono_font::MonoTextStyleBuilder::new()
             .font(&eg_fonts::FONT_7X13).text_color(ColorType::WHITE).build();
-        let mut position = Point::zero() + Size::new(0, PADDING + 16);
+        let text_style = eg::text::TextStyleBuilder::new()
+            .baseline(eg::text::Baseline::Top).alignment(eg::text::Alignment::Center).build();
+        let mut x = 5;
         for (label, style) in &tbl {
             let style = *style;
-            eg::text::Text::new(label, Point::new(position.x, position.y - 30), character_style).draw(target)?;
+            let position_label = Point::new(x + SIZE as i32 / 2, 6);
+            eg::text::Text::with_text_style(label, position_label, character_style, text_style).draw(target)?;
+            let position = Point::new(x, 50);
             draw_primitives(target, position, style)?;
             if show_shape_outline {
                 draw_primitives(target, position, style_shape_outline)?;
             }
-            position += Size::new(SIZE + PADDING, 0);
+            x += (SIZE + PADDING) as i32;
         }
         let text_style = eg::text::TextStyleBuilder::new()
             .baseline(eg::text::Baseline::Bottom).alignment(eg::text::Alignment::Center).build();
         eg::text::Text::with_text_style("Click to toggle shape outline",
-            Point::new(bbox.center().x, bbox.size.height as i32), character_style, text_style).draw(target)?;
+            Point::new(bbox.center().x, bbox.size.height as i32 - 6), character_style, text_style).draw(target)?;
         match func_interval(target) {
             Event::None => {},
             Event::Quit => break,
