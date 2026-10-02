@@ -41,6 +41,7 @@ where
     DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> Event,
 {
+    let bbox = target.bounding_box();
     let mut show_shape_outline = true;
     loop {
         target.clear(ColorType::BLACK)?;
@@ -58,20 +59,22 @@ where
         };
         let style_shape_outline = eg::primitives::PrimitiveStyleBuilder::new()
             .stroke_color(ColorType::RED).stroke_width(1).build();
-        let text_style = eg::mono_font::MonoTextStyleBuilder::new()
+        let character_style = eg::mono_font::MonoTextStyleBuilder::new()
             .font(&eg_fonts::FONT_7X13).text_color(ColorType::WHITE).build();
         let mut position = Point::zero() + Size::new(0, PADDING + 16);
         for (label, style) in &tbl {
             let style = *style;
-            eg::text::Text::new(label, Point::new(position.x, position.y - 30), text_style).draw(target)?;
+            eg::text::Text::new(label, Point::new(position.x, position.y - 30), character_style).draw(target)?;
             draw_primitives(target, position, style)?;
             if show_shape_outline {
                 draw_primitives(target, position, style_shape_outline)?;
             }
             position += Size::new(SIZE + PADDING, 0);
         }
-        eg::text::Text::new("Click to toggle shape outline",
-            Point::new(PADDING as i32, 300), text_style).draw(target)?;
+        let text_style = eg::text::TextStyleBuilder::new()
+            .baseline(eg::text::Baseline::Bottom).alignment(eg::text::Alignment::Center).build();
+        eg::text::Text::with_text_style("Click to toggle shape outline",
+            Point::new(bbox.center().x, bbox.size.height as i32), character_style, text_style).draw(target)?;
         match func_interval(target) {
             Event::None => {},
             Event::Quit => break,
