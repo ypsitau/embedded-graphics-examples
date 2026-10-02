@@ -2,7 +2,6 @@
 //!
 //! A simple hello world example displaying some primitive shapes and some text underneath.
 
-
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::iso_8859_1 as eg_fonts;
