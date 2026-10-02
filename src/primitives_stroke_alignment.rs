@@ -19,20 +19,6 @@ pub enum Event {
 const SIZE: u32 = 50;
 const PADDING: u32 = 32;
 
-fn draw_primitives<DrawTarget, ColorType>(target: &mut DrawTarget, mut position: Point,
-    style: eg::primitives::PrimitiveStyle<ColorType>) -> Result<(), DrawTarget::Error>
-where
-    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
-    ColorType: eg::pixelcolor::RgbColor,
-{
-    let y_offset = (SIZE + PADDING) as i32; 
-    eg::primitives::Rectangle::new(position, Size::new(SIZE, SIZE)).into_styled(style).draw(target)?;
-    position.y += y_offset;
-    eg::primitives::Circle::new(position, SIZE).into_styled(style).draw(target)?;
-    position.y += y_offset;
-    eg::primitives::Ellipse::new(position, Size::new(SIZE, SIZE + 16)).into_styled(style).draw(target)
-}
-
 pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
 where
@@ -87,4 +73,18 @@ where
         delay.delay_ms(20);
     }
     Ok(())
+}
+
+fn draw_primitives<DrawTarget, ColorType>(target: &mut DrawTarget, mut position: Point,
+    style: eg::primitives::PrimitiveStyle<ColorType>) -> Result<(), DrawTarget::Error>
+where
+    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
+{
+    let y_offset = (SIZE + PADDING) as i32; 
+    eg::primitives::Rectangle::new(position, Size::new(SIZE, SIZE)).into_styled(style).draw(target)?;
+    position.y += y_offset;
+    eg::primitives::Circle::new(position, SIZE).into_styled(style).draw(target)?;
+    position.y += y_offset;
+    eg::primitives::Ellipse::new(position, Size::new(SIZE, SIZE + 16)).into_styled(style).draw(target)
 }
