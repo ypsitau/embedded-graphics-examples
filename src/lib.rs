@@ -9,6 +9,7 @@ pub mod image_sub_image;
 pub mod image_tga;
 pub mod primitives_fill;
 pub mod primitives_polyline;
+pub mod primitives_stroke;
 pub mod text_alignment;
 pub mod text_extended_characters;
 pub mod text_fonts;

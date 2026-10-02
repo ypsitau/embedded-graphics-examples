@@ -1,64 +1,13 @@
-//! # Example: Primitive stroke styles
-//!
-//! This example demonstrates the different stroke styles available for primitives.
-
 use embedded_graphics as eg;
+use embedded_graphics::prelude::*;
 use embedded_graphics_simulator as eg_sim;
-
-type ColorType = eg::pixelcolor::Rgb888;
-
-const PADDING: i32 = 16;
-
-/// Draws all embedded-graphics primitives.
-fn draw_primitives<DrawTarget>(target: &mut DrawTarget, w: u32) -> Result<(), DrawTarget::Error>
-where
-    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
-{
-    use eg::prelude::*;
-    use eg::primitives::PrimitiveStyleBuilder;
-    eg::primitives::Triangle::new(Point::new(0, 64), Point::new(64, 0), Point::new(64, 64))
-        .into_styled(PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CSS_ORANGE_RED).stroke_width(w).build())
-        .draw(target)?;
-    eg::primitives::Rectangle::new(Point::new(0, 0), Size::new(64, 64))
-        .translate(Point::new(64 + PADDING, 0))
-        .into_styled(PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CSS_GOLD).stroke_width(w).build())
-        .draw(target)?;
-    eg::primitives::Line::new(Point::new(0, 0), Point::new(64, 64))
-        .translate(Point::new((64 + PADDING) * 2, 0))
-        .into_styled(PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CSS_SEA_GREEN).stroke_width(w).build())
-        .draw(target)?;
-    eg::primitives::Circle::new(Point::new(0, 0), 64)
-        .translate(Point::new((64 + PADDING) * 3, 0))
-        .into_styled(PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CSS_TEAL).stroke_width(w).build())
-        .draw(target)?;
-    eg::primitives::RoundedRectangle::new(
-            eg::primitives::Rectangle::new(Point::new(0, 0), Size::new(64, 64)),
-            eg::primitives::CornerRadii::new(Size::new(16, 16)))
-        .translate(Point::new((64 + PADDING) * 4, 0))
-        .into_styled(PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CSS_STEEL_BLUE).stroke_width(w).build())
-        .draw(target)?;
-    eg::primitives::Ellipse::new(Point::new(0, 0), Size::new(96, 64))
-        .translate(Point::new((64 + PADDING) * 5, 0))
-        .into_styled(PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CSS_FUCHSIA).stroke_width(w).build())
-        .draw(target)
-}
+use embedded_graphics_examples as examples;
 
 fn main() -> Result<(), core::convert::Infallible> {
-    use eg::prelude::*;
-    let mut target = eg_sim::SimulatorDisplay::<ColorType>::new(Size::new(512, 256));
-    let mut position = Point::new(10, 10);
-    draw_primitives(&mut target.translated(position), 1)?;
-    position.y += 64 + PADDING;
-    draw_primitives(&mut target.translated(position), 3)?;
-    position.y += 64 + PADDING;
-    draw_primitives(&mut target.translated(position), 10)?;
+    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(320, 240));
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
-    eg_sim::Window::new("Strokes", &output_settings).show_static(&target);
+    let mut window = eg_sim::Window::new("primitives_stroke", &output_settings);
+    examples::primitives_stroke::show(&mut target)?;
+    window.show_static(&target);
     Ok(())
 }
