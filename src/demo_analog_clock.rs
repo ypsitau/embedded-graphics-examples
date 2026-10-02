@@ -15,12 +15,11 @@ use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::ascii as fonts;
 use embedded_hal as hal;
 
-type ColorType = eg::pixelcolor::BinaryColor;
-
-pub fn run<DrawTarget, DelayNs, FuncInterval>(target: &mut DrawTarget,
+pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
@@ -39,7 +38,7 @@ where
         let seconds_radians = sexagesimal_to_radian(time.second());
         let mut str_time: String<16> = String::new();
         write!(str_time, "{:02}:{:02}:{:02}", time.hour(), time.minute(), time.second()).unwrap();
-        target.clear(ColorType::Off)?;
+        target.clear(ColorType::BLACK)?;
         draw_face(target, &circle_clock_face)?;
         draw_hand(target, &circle_clock_face, hours_radians, -60)?;
         draw_hand(target, &circle_clock_face, minutes_radians, -30)?;
@@ -50,7 +49,7 @@ where
         // Draw a small circle over the hands in the center of the clock face.
         // This has to happen after the hands are drawn so they're covered up.
         eg::primitives::Circle::with_center(circle_clock_face.center(), 9)
-            .into_styled(eg::primitives::PrimitiveStyle::with_fill(ColorType::On))
+            .into_styled(eg::primitives::PrimitiveStyle::with_fill(ColorType::WHITE))
             .draw(target)?;
         if func_interval(target) { break 'running Ok(()); }
         delay.delay_ms(50);
@@ -78,12 +77,13 @@ fn sexagesimal_to_radian(value: u32) -> f32 {
 }
 
 /// Draws a circle and 12 graduations as a simple clock face.
-fn draw_face<DrawTarget>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle) -> Result<(), DrawTarget::Error>
+fn draw_face<DrawTarget, ColorType>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
 {
     // Draw the outer face.
-    let style_builder = eg::primitives::PrimitiveStyleBuilder::new().stroke_color(ColorType::On);
+    let style_builder = eg::primitives::PrimitiveStyleBuilder::new().stroke_color(ColorType::WHITE);
     circle_clock_face.into_styled(style_builder.stroke_width(2).build()).draw(target)?;
     // Draw 12 graduations.
     for angle in (0..12).map(hour_to_radian) {
@@ -97,49 +97,52 @@ where
 }
 
 /// Draws a clock hand.
-fn draw_hand<DrawTarget>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle, angle: f32, length_delta: i32)
+fn draw_hand<DrawTarget, ColorType>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle, angle: f32, length_delta: i32)
     -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
 {
     let start = circle_clock_face.center();
     let end = polar(circle_clock_face, angle, length_delta);
     let style = eg::primitives::PrimitiveStyleBuilder::new()
-        .stroke_color(ColorType::On).stroke_width(1).build();
+        .stroke_color(ColorType::WHITE).stroke_width(1).build();
     eg::primitives::Line::new(start, end).into_styled(style).draw(target)
 }
 
 /// Draws a decorative circle on the second hand.
-fn draw_second_decoration<DrawTarget>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle, angle: f32, length_delta: i32)
+fn draw_second_decoration<DrawTarget, ColorType>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle, angle: f32, length_delta: i32)
     -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
 {
     let center = polar(circle_clock_face, angle, length_delta);
     let diameter = 11;
     let style = eg::primitives::PrimitiveStyleBuilder::new()
-        .stroke_color(ColorType::On).stroke_width(1).fill_color(ColorType::Off).build();
+        .stroke_color(ColorType::WHITE).stroke_width(1).fill_color(ColorType::BLACK).build();
     // Draw a fancy circle near the end of the second hand.
     eg::primitives::Circle::with_center(center, diameter).into_styled(style).draw(target)
 }
 
 /// Draw digital clock just above center with black text on a white background
-fn draw_digital_clock<DrawTarget>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle, str_time: &str)
+fn draw_digital_clock<DrawTarget, ColorType>(target: &mut DrawTarget, circle_clock_face: &eg::primitives::Circle, str_time: &str)
     -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
 {
     // Create a styled text object for the time text.
     let position = circle_clock_face.center() - circle_clock_face.bounding_box().size.y_axis() / 4;
     let character_style = eg::mono_font::MonoTextStyleBuilder::new()
-        .font(&fonts::FONT_9X15).text_color(ColorType::Off).build();
+        .font(&fonts::FONT_9X15).text_color(ColorType::BLACK).build();
     let text_style = eg::text::TextStyleBuilder::new()
         .alignment(eg::text::Alignment::Center).baseline(eg::text::Baseline::Middle).build();
     let text = eg::text::Text::with_text_style(&str_time, position, character_style, text_style);
     // Add a background around the time digits.
     // Note that there is no bottom-right padding as this is added by the font renderer itself.
     let bbox_text = text.bounding_box();
-    let style = eg::primitives::PrimitiveStyleBuilder::new().fill_color(ColorType::On).build();
+    let style = eg::primitives::PrimitiveStyleBuilder::new().fill_color(ColorType::WHITE).build();
     eg::primitives::Rectangle::with_center(bbox_text.center(), bbox_text.size + Size::new(4, 4))
         .into_styled(style).draw(target)?;
     // Draw the text after the background is drawn.

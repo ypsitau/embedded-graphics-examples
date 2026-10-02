@@ -1,5 +1,6 @@
 #![no_std]
 pub mod demo_analog_clock;
+pub mod demo_digital_clock;
 pub mod demo_pacman;
 pub mod hello_world;
 pub mod image_bmp;
