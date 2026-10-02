@@ -52,17 +52,20 @@ where
     loop {
         target.clear(ColorType::BLACK)?;
 
-        let style_stroke_inside = eg::primitives::PrimitiveStyleBuilder::new()
-            .stroke_color(ColorType::CYAN).stroke_width(15)
+        let style_base = eg::primitives::PrimitiveStyleBuilder::new()
+            .stroke_color(ColorType::CYAN).stroke_width(15).build();
+
+        let style_stroke_inside = eg::primitives::PrimitiveStyleBuilder::from(&style_base)
             .stroke_alignment(eg::primitives::StrokeAlignment::Inside).build();
 
-        let style_stroke_center = eg::primitives::PrimitiveStyleBuilder::from(&style_stroke_inside)
+        let style_stroke_center = eg::primitives::PrimitiveStyleBuilder::from(&style_base)
             .stroke_alignment(eg::primitives::StrokeAlignment::Center).build();
 
-        let style_stroke_outside = eg::primitives::PrimitiveStyleBuilder::from(&style_stroke_inside)
+        let style_stroke_outside = eg::primitives::PrimitiveStyleBuilder::from(&style_base)
             .stroke_alignment(eg::primitives::StrokeAlignment::Outside).build();
 
-        let style_shape_outline = eg::primitives::PrimitiveStyle::with_stroke(ColorType::RED, 1);
+        let style_shape_outline = eg::primitives::PrimitiveStyleBuilder::new()
+            .stroke_color(ColorType::RED).stroke_width(1).build();
 
         let text_offset = Point::new(0, 8) + Size::new(PADDING, 10);
         let text_style = eg::mono_font::MonoTextStyle::new(&eg_fonts::FONT_7X13, ColorType::WHITE);
