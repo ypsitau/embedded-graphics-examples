@@ -1,33 +1,13 @@
-//! # Example: Multiline text
-//!
-//! Exercise the font renderer to demonstrate rendering of multiline text
-
-use embedded_graphics::{
-    mono_font::{ascii::FONT_6X9, MonoTextStyleBuilder},
-    pixelcolor::BinaryColor,
-    prelude::*,
-    text::Text,
-};
-use embedded_graphics_simulator::{OutputSettingsBuilder, SimulatorDisplay, Window};
+use embedded_graphics as eg;
+use embedded_graphics::prelude::*;
+use embedded_graphics_simulator as eg_sim;
+use embedded_graphics_examples as examples;
 
 fn main() -> Result<(), core::convert::Infallible> {
-    let mut display: SimulatorDisplay<BinaryColor> = SimulatorDisplay::new(Size::new(256, 128));
-
-    let style = MonoTextStyleBuilder::new()
-        .font(&FONT_6X9)
-        .text_color(BinaryColor::On)
-        .background_color(BinaryColor::Off)
-        .build();
-
-    Text::new(
-        "This is a\nmultiline\nHello World!",
-        Point::new(15, 15),
-        style,
-    )
-    .draw(&mut display)?;
-
-    let output_settings = OutputSettingsBuilder::new().scale(2).build();
-    Window::new("Fonts", &output_settings).show_static(&display);
-
+    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(320, 240));
+    let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
+    let mut window = eg_sim::Window::new("text_multiline", &output_settings);
+    examples::text_multiline::show(&mut target)?;
+    window.show_static(&target);
     Ok(())
 }

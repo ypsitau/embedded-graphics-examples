@@ -6,7 +6,6 @@ use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::ascii as eg_fonts;
 
-
 pub fn show<DrawTarget, ColorType>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
