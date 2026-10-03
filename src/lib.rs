@@ -13,6 +13,7 @@ pub mod primitives_stroke;
 pub mod primitives_stroke_alignment;
 pub mod primitives_triangles;
 pub mod text_alignment;
+pub mod text_custom_font;
 pub mod text_extended_characters;
 pub mod text_fonts;
 pub mod text_styles;
