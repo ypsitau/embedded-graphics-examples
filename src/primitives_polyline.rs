@@ -12,6 +12,7 @@ where
     ColorType: eg::pixelcolor::RgbColor
         + From<eg::pixelcolor::Rgb555> + From<eg::pixelcolor::Rgb565> + From<eg::pixelcolor::Rgb888>,
 {
+/*
     let bbox = target.bounding_box();
     let size = core::cmp::min(bbox.size.width, bbox.size.height) as i32;
     let line_style = eg::primitives::PrimitiveStyle::with_stroke(ColorType::GREEN, 7);
@@ -30,5 +31,6 @@ where
         points
     };
     eg::primitives::Polyline::new(&points).translate(center).into_styled(line_style).draw(target)?;
+*/
     Ok(())
 }

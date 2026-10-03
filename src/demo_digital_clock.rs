@@ -3,7 +3,7 @@
 //! An example displaying a digital clock using the `eg-seven-segment` crate.
 
 use core::fmt::Write as _;
-use chrono::prelude::*;
+//use chrono::prelude::*;
 use eg_seven_segment::SevenSegmentStyleBuilder;
 use embedded_graphics as eg;
 use embedded_graphics::Drawable as _;
@@ -19,6 +19,7 @@ where
     DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
+/*
     let character_style = SevenSegmentStyleBuilder::new()
         .segment_color(ColorType::WHITE).build();
     let text_style = eg::text::TextStyleBuilder::new()
@@ -34,5 +35,6 @@ where
         if func_interval(target) { break; }
         delay.delay_ms(100);
     }
+*/
     Ok(())
 }

@@ -20,15 +20,19 @@ where
     let style_eye = eg::primitives::PrimitiveStyleBuilder::new()
         .stroke_color(ColorType::BLACK).stroke_width(1).fill_color(ColorType::BLACK).build();
     let mut istep: i32 = 0;
-    let center = target.bounding_box().center();
+    let bbox = target.bounding_box();
+    let center = bbox.center();
+    let diameter = core::cmp::min(bbox.size.width, bbox.size.height);
+    let offset_eye = Point::new(diameter as i32 * 6 / 100, -(diameter as i32) * 30 / 100);
+    let size_eye = diameter * 8 / 100;
     loop {
-        target.clear(ColorType::WHITE)?;
+        //target.clear(ColorType::WHITE)?;
         let deg_open = ((30 * (istep - STEPS).abs()) as f32) / STEPS as f32;
         let angle_start = Angle::from_degrees(deg_open);
         let angle_sweep = Angle::from_degrees(360.0 - 2.0 * deg_open);
-        eg::primitives::Sector::with_center(center, 61, angle_start, angle_sweep)
+        eg::primitives::Sector::with_center(center, diameter, angle_start, angle_sweep)
             .into_styled(style_sector).draw(target)?;
-        eg::primitives::Circle::with_center(center + Point::new(4, -16), 5)
+        eg::primitives::Circle::with_center(center + offset_eye, size_eye)
             .into_styled(style_eye).draw(target)?;
         istep = (istep + 1) % (2 * STEPS + 1);
         if func_interval(target) { break; }

@@ -23,6 +23,18 @@ where
     DelayNs: hal::delay::DelayNs,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
+    Ok(())
+}
+
+/*
+pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
+    mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
+where
+    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
+    ColorType: eg::pixelcolor::RgbColor,
+    DelayNs: hal::delay::DelayNs,
+    FuncInterval: FnMut(&mut DrawTarget) -> bool,
+{
     use chrono::Timelike as _;
     /// The margin between the clock face and the display border.
     const MARGIN: u32 = 10;
@@ -149,3 +161,4 @@ where
     text.draw(target)?;
     Ok(())
 }
+*/

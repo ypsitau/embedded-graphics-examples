@@ -21,6 +21,7 @@ where
         .fill_color(ColorType::GREEN).build();
     let styles = [style1, style2, style3];
     let mut offset = Point::new(8, 8);
+    target.clear(ColorType::BLACK)?;
     for style in &styles {
         let style = *style;
         eg::primitives::Circle::new(Point::new(0, 0), 65)
