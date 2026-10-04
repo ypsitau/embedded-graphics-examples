@@ -29,7 +29,7 @@ where
 {
     let bbox = target.bounding_box();
     let mut show_shape_outline = true;
-    loop {
+    'running: loop {
         target.clear(ColorType::BLACK)?;
         let tbl = {
             use eg::primitives::StrokeAlignment as SA;
@@ -63,14 +63,17 @@ where
             .baseline(eg::text::Baseline::Bottom).alignment(eg::text::Alignment::Center).build();
         eg::text::Text::with_text_style("Click to toggle shape outline",
             Point::new(bbox.center().x, bbox.size.height as i32 - 6), character_style, text_style).draw(target)?;
-        match func_interval(target) {
-            Event::None => {},
-            Event::Quit => break,
-            Event::MouseButtonDown => {
-                show_shape_outline = !show_shape_outline;
+        'wait_event: loop {
+            match func_interval(target) {
+                Event::None => {},
+                Event::Quit => break 'running,
+                Event::MouseButtonDown => {
+                    show_shape_outline = !show_shape_outline;
+                    break 'wait_event;
+                }
             }
+            delay.delay_ms(20);
         }
-        delay.delay_ms(20);
     }
     Ok(())
 }

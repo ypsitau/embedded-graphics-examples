@@ -16,6 +16,8 @@ where
         .font(&eg::mono_font::ascii::FONT_8X13)
         .text_color(ColorType::GREEN).build();
 
+    target.clear(ColorType::BLACK)?;
+
     let text_style = eg::text::TextStyleBuilder::new()
         .baseline(eg::text::Baseline::Top).alignment(eg::text::Alignment::Left).build();
     eg::text::Text::with_text_style("Top+Left",

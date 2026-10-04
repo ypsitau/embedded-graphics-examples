@@ -25,6 +25,8 @@ where
     let str_digits = "0123456789";
     let font = &SEVENT_SEGMENT_FONT;
 
+    target.clear(ColorType::BLACK)?;
+
     let character_style_builder = eg::mono_font::MonoTextStyleBuilder::new()
         .font(font).text_color(ColorType::WHITE).background_color(ColorType::CSS_BROWN);
     let text_style_builder = eg::text::TextStyleBuilder::new().alignment(eg::text::Alignment::Center);

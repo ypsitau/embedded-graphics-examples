@@ -18,6 +18,7 @@ where
         "This example demonstrates drawing a piece of multiline text \
         using the TextBox from embedded-text. For more examples, \
         check out the embedded-text repository.";
+    target.clear(ColorType::BLACK)?;
     let character_style = eg::mono_font::MonoTextStyleBuilder::new()
         .font(&eg_fonts::FONT_6X10).text_color(ColorType::WHITE).build();
     let textbox_style = embtext::style::TextBoxStyleBuilder::new()

@@ -14,6 +14,8 @@ where
     const SIZE_OBJ: i32 = 64;
     let mut offset = Point::new(10, 14);
 
+    target.clear(ColorType::BLACK)?;
+
     // Draw a 3px wide outline around the target.
     let style = eg::primitives::PrimitiveStyleBuilder::new()
         .stroke_color(ColorType::WHITE).stroke_width(3)

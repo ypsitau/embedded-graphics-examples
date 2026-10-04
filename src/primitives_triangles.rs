@@ -25,6 +25,8 @@ where
 
     let mut position = Point::new(0, 0);
 
+    target.clear(ColorType::BLACK)?;
+
     // Inside thick stroke, no fill
     let style = eg::primitives::PrimitiveStyleBuilder::new()
         .stroke_color(ColorType::CSS_SALMON).stroke_width(5)

@@ -19,6 +19,7 @@ where
         ("Font10x20", &eg_fonts::FONT_10X20),
     ];
     let mut position = Point::new(0, 15);
+    target.clear(ColorType::BLACK)?;
     for (name, font) in &tbl {
         position.y += font.character_size.height as i32;
         let text_style = eg::mono_font::MonoTextStyle::new(font, ColorType::WHITE);

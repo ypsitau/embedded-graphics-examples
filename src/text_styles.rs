@@ -17,6 +17,7 @@ where
     let font_italic = &eg_fonts::FONT_7X13_ITALIC; 
     let character_style_normal = eg::mono_font::MonoTextStyleBuilder::new()
         .font(font).text_color(ColorType::WHITE).build();
+    target.clear(ColorType::BLACK)?;
     // First line
     let mut position_base = Point::new(4, 30 + font.character_size.height as i32);
     let position = position_base;

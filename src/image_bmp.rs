@@ -17,6 +17,7 @@ where
     ColorType: eg::pixelcolor::RgbColor
         + From<eg::pixelcolor::Rgb555> + From<eg::pixelcolor::Rgb565> + From<eg::pixelcolor::Rgb888>,
 {
+    target.clear(ColorType::BLACK)?;
     let center = target.bounding_box().center();
     let bmp = tinybmp::Bmp::<ColorType>::from_slice(include_bytes!("./assets/rust-pride.bmp")).unwrap();
     eg::image::Image::with_center(&bmp, center).draw(target)?;

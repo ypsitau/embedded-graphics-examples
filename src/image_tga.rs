@@ -18,6 +18,7 @@ where
         + From<eg::pixelcolor::Gray8> + From<eg::pixelcolor::Rgb555>
         + From<eg::pixelcolor::Rgb565> + From<eg::pixelcolor::Rgb888>,
 {
+    target.clear(ColorType::BLACK)?;
     let center = target.bounding_box().center();
     let tga = tinytga::Tga::<ColorType>::from_slice(include_bytes!("./assets/rust-pride.tga")).unwrap();
     eg::image::Image::with_center(&tga, center).draw(target)?;

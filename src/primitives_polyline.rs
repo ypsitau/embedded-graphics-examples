@@ -18,6 +18,7 @@ where
     let size = core::cmp::min(bbox.size.width, bbox.size.height) as i32;
     let line_style = eg::primitives::PrimitiveStyle::with_stroke(ColorType::GREEN, 7);
     let center = bbox.center();
+    target.clear(ColorType::BLACK)?;
     let points = {
         let radius_outer = size as f32 / 3.0;
         let radius_inner = radius_outer * 0.38;

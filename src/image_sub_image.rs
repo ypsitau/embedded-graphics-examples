@@ -17,6 +17,7 @@ where
         + From<eg::pixelcolor::Gray8> + From<eg::pixelcolor::Rgb555>
         + From<eg::pixelcolor::Rgb565> + From<eg::pixelcolor::Rgb888>,
 {
+    target.clear(ColorType::BLACK)?;
     // Load TGA file with the tiles.
     let tiles = tinytga::Tga::<ColorType>::from_slice(include_bytes!("./assets/tiles.tga")).unwrap();
 

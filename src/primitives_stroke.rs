@@ -30,6 +30,8 @@ where
     let mut position = Point::new(0, 0);
     let style_builder = eg::primitives::PrimitiveStyleBuilder::new().stroke_width(w);
 
+    target.clear(ColorType::BLACK)?;
+
     let style = style_builder.stroke_color(ColorType::CSS_ORANGE_RED).build();
     eg::primitives::Triangle::new(
             Point::new(0, SIZE as i32), Point::new(SIZE as i32, 0), Point::new(SIZE as i32, SIZE as i32))

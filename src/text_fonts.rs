@@ -23,6 +23,7 @@ where
         ("Hello World! - FONT_10X20", &eg_fonts::FONT_10X20),
     ];
     let mut pt = Point::new(15, 4);
+    target.clear(ColorType::BLACK)?;
     for (text, font) in entries.iter() {
         pt.y += font.character_size.height as i32;
         let character_style = eg::mono_font::MonoTextStyleBuilder::new()

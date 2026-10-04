@@ -18,6 +18,8 @@ where
     let font = &eg_fonts::FONT_8X13;
     let character_style_builder = eg::mono_font::MonoTextStyleBuilder::new().font(font);
 
+    target.clear(ColorType::BLACK)?;
+
     let mut y = 100;
     let character_style = character_style_builder
         .text_color(ColorType::WHITE).build();

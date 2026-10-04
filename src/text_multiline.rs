@@ -32,6 +32,7 @@ where
     versalia, put her initial into the belt and made
     herself on the way.
     "};
+    target.clear(ColorType::BLACK)?;
     let character_style = eg::mono_font::MonoTextStyleBuilder::new()
         .font(&eg_fonts::FONT_6X13).text_color(ColorType::WHITE).background_color(ColorType::BLACK)
         .build();
