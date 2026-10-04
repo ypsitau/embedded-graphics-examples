@@ -4,7 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-#chrono = { version = "0.4.45", features = ["no-std"] }
 eg-seven-segment = "0.2.0"
 embedded-graphics = "0.8.2"
 embedded-hal = "1.0.0"
@@ -18,3 +17,4 @@ tinytga = "0.5.0"
 
 [target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
 embedded-graphics-simulator = { version = "0.8.0" }
+chrono = { version = "0.4" }

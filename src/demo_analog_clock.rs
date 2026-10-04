@@ -16,28 +16,29 @@ use micromath::F32Ext;
 
 use embedded_graphics::mono_font::ascii as fonts;
 
-/*
-pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
-    mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
-where
-    DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
-    ColorType: eg::pixelcolor::RgbColor,
-    DelayNs: hal::delay::DelayNs,
-    FuncInterval: FnMut(&mut DrawTarget) -> bool,
-{
-    Ok(())
+pub struct Time {
+    pub hour: u8,
+    pub minute: u8,
+    pub second: u8,
 }
-*/
 
-pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
-    mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
+impl Time {
+    /// Creates a new `Time` instance.
+    pub fn new(hour: u8, minute: u8, second: u8) -> Self {
+        Self { hour, minute, second }
+    }
+}
+
+pub fn run<DrawTarget, ColorType, DelayNs, FuncGetTime, FuncInterval>(target: &mut DrawTarget,
+    mut delay: DelayNs, mut func_get_time: FuncGetTime, mut func_interval: FuncInterval)
+-> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
+    FuncGetTime: FnMut() -> Time,
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
-    //use chrono::Timelike as _;
     /// The margin between the clock face and the display border.
     const MARGIN: u32 = 10;
     // The draw target bounding box can be used to determine the size of the display.
@@ -45,15 +46,13 @@ where
     let diameter = bounding_box.size.width.min(bounding_box.size.height) - 2 * MARGIN;
     let circle_clock_face = eg::primitives::Circle::with_center(bounding_box.center(), diameter);
     'running: loop {
-        let month = time::Month::try_from(6).unwrap();
-        let now = time::PrimitiveDateTime::new(time::Date::from_calendar_date(2024, month, 6).unwrap(),
-            time::Time::from_hms(12, 0, 0).unwrap());
+        let now = func_get_time();
         // Calculate the position of the three clock hands in radians.
-        let hours_radians = hour_to_radian(now.hour() as u32);
-        let minutes_radians = sexagesimal_to_radian(now.minute() as u32);
-        let seconds_radians = sexagesimal_to_radian(now.second() as u32);
+        let hours_radians = hour_to_radian(now.hour as u32);
+        let minutes_radians = sexagesimal_to_radian(now.minute as u32);
+        let seconds_radians = sexagesimal_to_radian(now.second as u32);
         let mut str_time: String<16> = String::new();
-        write!(str_time, "{:02}:{:02}:{:02}", now.hour(), now.minute(), now.second()).unwrap();
+        write!(str_time, "{:02}:{:02}:{:02}", now.hour, now.minute, now.second).unwrap();
         target.clear(ColorType::BLACK)?;
         draw_face(target, &circle_clock_face)?;
         draw_hand(target, &circle_clock_face, hours_radians, -60)?;

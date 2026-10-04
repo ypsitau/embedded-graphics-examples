@@ -1,4 +1,4 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 pub mod demo_analog_clock;
 pub mod demo_digital_clock;
 pub mod demo_pacman;

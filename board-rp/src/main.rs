@@ -6,7 +6,7 @@ mod emb {
 }
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples as examples;
-use micromath::F32Ext;
+
 mod common;
 
 #[emb::executor::main]
@@ -16,7 +16,5 @@ async fn main(_spawner: emb::executor::Spawner) {
     let (mut display, _pin_display_bl) = common::init_display(mipidsi::models::ST7789, orientation);
     examples::primitives_fill::show(&mut display).unwrap();
     //examples::demo_pacman::run(&mut display, emb::time::Delay, |_| -> bool { false }).unwrap();
-    let x: f32 = 1.0;
-    x.sin();
     core::future::pending::<()>().await;
 }
