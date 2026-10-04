@@ -16,6 +16,7 @@ use micromath::F32Ext;
 
 use embedded_graphics::mono_font::ascii as fonts;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Time {
     pub hour: u8,
     pub minute: u8,
@@ -45,20 +46,30 @@ where
     let bounding_box = target.bounding_box();
     let diameter = bounding_box.size.width.min(bounding_box.size.height) - 2 * MARGIN;
     let circle_clock_face = eg::primitives::Circle::with_center(bounding_box.center(), diameter);
+    let style_erase = eg::primitives::PrimitiveStyle::with_fill(ColorType::BLACK);
+    let mut time_prev = Option::None;
     'running: loop {
-        let now = func_get_time();
+        let time_cur = func_get_time();
+        if let Some(time_prev) = time_prev {
+            if time_cur == time_prev {
+                delay.delay_ms(100);
+                continue 'running;
+            }
+        }
+        time_prev = Some(time_cur);
         // Calculate the position of the three clock hands in radians.
-        let hours_radians = hour_to_radian(now.hour as u32);
-        let minutes_radians = sexagesimal_to_radian(now.minute as u32);
-        let seconds_radians = sexagesimal_to_radian(now.second as u32);
+        let hour_radian = hour_to_radian(time_cur.hour as u32);
+        let minute_radian = sexagesimal_to_radian(time_cur.minute as u32);
+        let second_radian = sexagesimal_to_radian(time_cur.second as u32);
         let mut str_time: String<16> = String::new();
-        write!(str_time, "{:02}:{:02}:{:02}", now.hour, now.minute, now.second).unwrap();
-        target.clear(ColorType::BLACK)?;
+        write!(str_time, "{:02}:{:02}:{:02}", time_cur.hour, time_cur.minute, time_cur.second).unwrap();
+        //target.clear(ColorType::BLACK)?;
+        circle_clock_face.bounding_box().into_styled(style_erase).draw(target)?;
         draw_face(target, &circle_clock_face)?;
-        draw_hand(target, &circle_clock_face, hours_radians, -60)?;
-        draw_hand(target, &circle_clock_face, minutes_radians, -30)?;
-        draw_hand(target, &circle_clock_face, seconds_radians, 0)?;
-        draw_second_decoration(target, &circle_clock_face, seconds_radians, -20)?;
+        draw_hand(target, &circle_clock_face, hour_radian, -60)?;
+        draw_hand(target, &circle_clock_face, minute_radian, -30)?;
+        draw_hand(target, &circle_clock_face, second_radian, 0)?;
+        draw_second_decoration(target, &circle_clock_face, second_radian, -20)?;
         // Draw digital clock just above center.
         draw_digital_clock(target, &circle_clock_face, &str_time)?;
         // Draw a small circle over the hands in the center of the clock face.
@@ -67,7 +78,7 @@ where
             .into_styled(eg::primitives::PrimitiveStyle::with_fill(ColorType::WHITE))
             .draw(target)?;
         if func_interval(target) { break 'running Ok(()); }
-        delay.delay_ms(50);
+        delay.delay_ms(100);
     }
 }
 
