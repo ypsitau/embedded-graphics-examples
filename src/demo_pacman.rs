@@ -1,6 +1,7 @@
 //! # Example: Pacman
 //!
 //! An example displaying an animated Pacman.
+
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_hal as hal;

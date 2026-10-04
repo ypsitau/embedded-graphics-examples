@@ -49,6 +49,7 @@ where
     let circle_clock_face = eg::primitives::Circle::with_center(bounding_box.center(), diameter);
     let style_erase = eg::primitives::PrimitiveStyle::with_fill(ColorType::BLACK);
     let mut time_prev = Option::None;
+    target.clear(ColorType::BLACK)?;
     'running: loop {
         let time_cur = func_get_time();
         if let Some(time_prev) = time_prev {
