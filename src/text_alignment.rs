@@ -13,7 +13,7 @@ where
     let bounding_box = target.bounding_box();
 
     let character_style = eg::mono_font::MonoTextStyleBuilder::new()
-        .font(&eg::mono_font::ascii::FONT_8X13)
+        .font(&eg::mono_font::ascii::FONT_10X20)
         .text_color(ColorType::GREEN).build();
 
     target.clear(ColorType::BLACK)?;

@@ -11,14 +11,14 @@ where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
 {
+    target.clear(ColorType::BLACK)?;
+
     let style = eg::primitives::PrimitiveStyleBuilder::new().fill_color(ColorType::RED).build();
     eg::primitives::Circle::new(Point::new(40, 80), 80).into_styled(style).draw(target)?;
     eg::primitives::Rectangle::new(Point::new(140, 80), Size::new(80, 80))
         .into_styled(style).draw(target)?;
     let font = &eg_fonts::FONT_8X13;
     let character_style_builder = eg::mono_font::MonoTextStyleBuilder::new().font(font);
-
-    target.clear(ColorType::BLACK)?;
 
     let mut y = 100;
     let character_style = character_style_builder
