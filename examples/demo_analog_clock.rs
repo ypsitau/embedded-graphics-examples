@@ -1,8 +1,9 @@
+mod common;
+
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_graphics_simulator as eg_sim;
 use embedded_graphics_examples::demo_analog_clock as example;
-mod common;
 
 fn main() -> Result<(), core::convert::Infallible> {
 
