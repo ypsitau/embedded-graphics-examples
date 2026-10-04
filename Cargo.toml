@@ -4,16 +4,17 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-#chrono = "0.4.45"
+#chrono = { version = "0.4.45", features = ["no-std"] }
 eg-seven-segment = "0.2.0"
 embedded-graphics = "0.8.2"
 embedded-hal = "1.0.0"
 embedded-text = "0.7.3"
 heapless = "0.9.3"
 indoc = "2.0.7"
+micromath = "2.1.0"
+time = { version = "0.3.55", default-features = false } # no_std
 tinybmp = "0.7.0"
 tinytga = "0.5.0"
-embedded-graphics-simulator = { version = "0.8.0", optional = true }
 
-[features]
-std = ["dep:embedded-graphics-simulator"]
+[target.'cfg(any(target_os = "windows", target_os = "linux"))'.dependencies]
+embedded-graphics-simulator = { version = "0.8.0" }
