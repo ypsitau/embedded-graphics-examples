@@ -5,7 +5,7 @@
 use core::fmt::Write as _;
 use eg_seven_segment::SevenSegmentStyleBuilder;
 use embedded_graphics as eg;
-use embedded_graphics::Drawable as _;
+use embedded_graphics::prelude::*;
 use embedded_hal as hal;
 use heapless::String;
 
@@ -34,9 +34,11 @@ where
     FuncInterval: FnMut(&mut DrawTarget) -> bool,
 {
     let character_style = SevenSegmentStyleBuilder::new()
-        .segment_color(ColorType::WHITE).build();
-    let text_style = eg::text::TextStyleBuilder::new()
-        .alignment(eg::text::Alignment::Center).baseline(eg::text::Baseline::Middle).build();
+        .digit_size(Size::new(30, 60)).segment_width(8).segment_color(ColorType::WHITE).build();
+    let text_style_top = eg::text::TextStyleBuilder::new()
+        .alignment(eg::text::Alignment::Center).baseline(eg::text::Baseline::Top).build();
+    let text_style_bottom = eg::text::TextStyleBuilder::new()
+        .alignment(eg::text::Alignment::Center).baseline(eg::text::Baseline::Bottom).build();
     let mut sbuf = String::<16>::new();
     let mut time_prev = Option::None;
     'running: loop {
@@ -50,9 +52,11 @@ where
         time_prev = Some(time_cur);
         target.clear(ColorType::BLACK)?;
         sbuf.clear();
+        eg::text::Text::with_text_style("ABCDEFGHI", target.bounding_box().center() - Point::new(0, 4),
+            character_style, text_style_bottom).draw(target)?;
         write!(sbuf, "{:02}:{:02}:{:02}", time_cur.hour, time_cur.minute, time_cur.second).unwrap();
-        eg::text::Text::with_text_style(&sbuf, target.bounding_box().center(),
-            character_style, text_style).draw(target)?;
+        eg::text::Text::with_text_style(&sbuf, target.bounding_box().center() + Point::new(0, 4),
+            character_style, text_style_top).draw(target)?;
         if func_interval(target) { break 'running; }
         delay.delay_ms(100);
     }
