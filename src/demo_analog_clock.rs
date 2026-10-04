@@ -12,6 +12,7 @@ use core::f32::consts::PI;
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_hal as hal;
+#[cfg(not(any(target_os = "windows", target_os = "linux")))]
 use micromath::F32Ext;
 
 use embedded_graphics::mono_font::ascii as fonts;

@@ -1,13 +1,13 @@
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_graphics_simulator as eg_sim;
-use embedded_graphics_examples as examples;
+use embedded_graphics_examples::primitives_polyline as example;
 
 fn main() -> Result<(), core::convert::Infallible> {
     let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(240, 320));
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
     let mut window = eg_sim::Window::new("primitives_polyline", &output_settings);
-    examples::primitives_polyline::show(&mut target)?;
+    example::show(&mut target)?;
     window.show_static(&target);
     Ok(())
 }

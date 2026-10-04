@@ -5,6 +5,8 @@
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use core::f32::consts;
+#[cfg(not(any(target_os = "windows", target_os = "linux")))]
+use micromath::F32Ext;
 
 pub fn show<DrawTarget, ColorType>(target: &mut DrawTarget) -> Result<(), DrawTarget::Error>
 where
@@ -12,7 +14,6 @@ where
     ColorType: eg::pixelcolor::RgbColor
         + From<eg::pixelcolor::Rgb555> + From<eg::pixelcolor::Rgb565> + From<eg::pixelcolor::Rgb888>,
 {
-/*
     let bbox = target.bounding_box();
     let size = core::cmp::min(bbox.size.width, bbox.size.height) as i32;
     let line_style = eg::primitives::PrimitiveStyle::with_stroke(ColorType::GREEN, 7);
@@ -31,6 +32,5 @@ where
         points
     };
     eg::primitives::Polyline::new(&points).translate(center).into_styled(line_style).draw(target)?;
-*/
     Ok(())
 }
