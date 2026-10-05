@@ -26,8 +26,8 @@ where
     let diameter = core::cmp::min(bbox.size.width, bbox.size.height);
     let offset_eye = Point::new(diameter as i32 * 6 / 100, -(diameter as i32) * 30 / 100);
     let size_eye = diameter * 8 / 100;
-    target.clear(ColorType::WHITE)?;
     loop {
+        target.clear(ColorType::WHITE)?;
         let deg_open = ((30 * (istep - STEPS).abs()) as f32) / STEPS as f32;
         let angle_start = Angle::from_degrees(deg_open);
         let angle_sweep = Angle::from_degrees(360.0 - 2.0 * deg_open);
