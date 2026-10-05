@@ -9,13 +9,13 @@ use embedded_graphics::mono_font::ascii as eg_fonts;
 use embedded_hal as hal;
 use heapless::String;
 
-pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
-    mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
+pub fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
+    mut delay: DelayNs, mut fn_interval: FnInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
-    FuncInterval: FnMut(&mut DrawTarget) -> bool,
+    FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     let center = target.bounding_box().center();
     let style_arc = eg::primitives::PrimitiveStyleBuilder::new()
@@ -35,7 +35,7 @@ where
         sbuf.clear();
         write!(sbuf, "{}%", progress).unwrap();
         eg::text::Text::with_text_style(&sbuf, center, character_style, text_style).draw(target)?;
-        if func_interval(target) { break 'running; }
+        if fn_interval(target) { break 'running; }
         delay.delay_ms(50);
         progress = (progress + 1) % 101;
     }

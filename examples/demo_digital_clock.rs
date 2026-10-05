@@ -9,12 +9,12 @@ fn main() -> Result<(), core::convert::Infallible> {
     let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(320, 240));
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
     let mut window = eg_sim::Window::new("demo_digital_clock", &output_settings);
-    let func_get_time = || {
+    let fn_get_time = || {
         use chrono::prelude::*;
         let now = chrono::Local::now();
         example::Time::new(now.hour() as u8, now.minute() as u8, now.second() as u8)
     };
-    example::run(&mut target, common::ThreadDelay, func_get_time,
+    example::run(&mut target, common::ThreadDelay, fn_get_time,
         |target| {
             window.update(target);
             window.events().any(|e| e == eg_sim::SimulatorEvent::Quit)

@@ -31,15 +31,15 @@ impl Time {
     }
 }
 
-pub fn run<DrawTarget, ColorType, DelayNs, FuncGetTime, FuncInterval>(target: &mut DrawTarget,
-    mut delay: DelayNs, mut func_get_time: FuncGetTime, mut func_interval: FuncInterval)
+pub fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
+    mut delay: DelayNs, mut fn_get_time: FnGetTime, mut fn_interval: FnInterval)
 -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
-    FuncGetTime: FnMut() -> Time,
-    FuncInterval: FnMut(&mut DrawTarget) -> bool,
+    FnGetTime: FnMut() -> Time,
+    FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     /// The margin between the clock face and the display border.
     const MARGIN: u32 = 10;
@@ -51,7 +51,7 @@ where
     let mut time_prev = Option::None;
     target.clear(ColorType::BLACK)?;
     'running: loop {
-        let time_cur = func_get_time();
+        let time_cur = fn_get_time();
         if let Some(time_prev) = time_prev {
             if time_cur == time_prev {
                 delay.delay_ms(100);
@@ -79,7 +79,7 @@ where
         eg::primitives::Circle::with_center(circle_clock_face.center(), 9)
             .into_styled(eg::primitives::PrimitiveStyle::with_fill(ColorType::WHITE))
             .draw(target)?;
-        if func_interval(target) { break 'running Ok(()); }
+        if fn_interval(target) { break 'running Ok(()); }
         delay.delay_ms(100);
     }
 }

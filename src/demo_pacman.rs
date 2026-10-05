@@ -6,13 +6,13 @@ use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_hal as hal;
 
-pub fn run<ColorType, DrawTarget, DelayNs, FuncInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut func_interval: FuncInterval)
+pub fn run<ColorType, DrawTarget, DelayNs, FnInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut fn_interval: FnInterval)
     -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>, 
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
-    FuncInterval: FnMut(&mut DrawTarget) -> bool,
+    FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     const STEPS: i32 = 10;
     // Create styles used by the drawing operations.
@@ -36,7 +36,7 @@ where
         eg::primitives::Circle::with_center(center + offset_eye, size_eye)
             .into_styled(style_eye).draw(target)?;
         istep = (istep + 1) % (2 * STEPS + 1);
-        if func_interval(target) { break; }
+        if fn_interval(target) { break; }
         delay.delay_ms(50); // 50 ms delay
     }
     Ok(())

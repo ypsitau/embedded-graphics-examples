@@ -19,13 +19,13 @@ pub enum Event {
 const SIZE: u32 = 50;
 const PADDING: u32 = 32;
 
-pub fn run<DrawTarget, ColorType, DelayNs, FuncInterval>(target: &mut DrawTarget,
-    mut delay: DelayNs, mut func_interval: FuncInterval) -> Result<(), DrawTarget::Error>
+pub fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
+    mut delay: DelayNs, mut fn_interval: FnInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
-    FuncInterval: FnMut(&mut DrawTarget) -> Event,
+    FnInterval: FnMut(&mut DrawTarget) -> Event,
 {
     let bbox = target.bounding_box();
     let mut show_shape_outline = true;
@@ -64,7 +64,7 @@ where
         eg::text::Text::with_text_style("Click to toggle shape outline",
             Point::new(bbox.center().x, bbox.size.height as i32 - 6), character_style, text_style).draw(target)?;
         'wait_event: loop {
-            match func_interval(target) {
+            match fn_interval(target) {
                 Event::None => {},
                 Event::Quit => break 'running,
                 Event::MouseButtonDown => {
