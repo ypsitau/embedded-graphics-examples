@@ -22,3 +22,4 @@ pub mod text_multiline;
 pub mod text_styles;
 pub mod text_textbox;
 pub mod text_transparent;
+pub mod text_u8g2_fonts;
