@@ -1,7 +1,6 @@
-//! # Example: Fonts
+//! # Example: Using M+ Fonts with Embedded-Graphics and Embedded-Text
 //!
-//! Demonstrate some of the available builtin fonts. A full list of fonts can be found in the
-//! [embedded-graphics documentation](https://docs.rs/embedded-graphics).
+//! This example demonstrates how to use the M+ fonts with embedded-graphics and embedded-text.
 
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
@@ -17,12 +16,7 @@ where
 {
     target.clear(ColorType::BLACK)?;
     #[strings::emit]
-    let bitmap_font = mplusfonts::mplus!(code(115), NORMAL, code_line_height(16), true, 1, 4, '0'..='9');
-    let character_style = mplusfonts::style::BitmapFontStyleBuilder::new()
-        .font(&bitmap_font).text_color(ColorType::WHITE).build();
-    let textbox_style = embtext::style::TextBoxStyleBuilder::new()
-        .alignment(embtext::alignment::HorizontalAlignment::Left)
-        .vertical_alignment(embtext::alignment::VerticalAlignment::Top).build();
+    let bitmap_font = mplusfonts::mplus!(code(100), MEDIUM, code_line_height(16), true, 1, 4, '0'..='9');
     let str_text = indoc::indoc! {"
     親譲りの無鉄砲で小供の時から損ばかりしている。小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜かした事がある。\
     なぜそんな無闇をしたと聞く人があるかも知れぬ。別段深い理由でもない。\
@@ -32,6 +26,12 @@ where
     切れぬ事があるか、何でも切ってみせると受け合った。そんなら君の指を切ってみろと注文したから、何だ指ぐらいこの通りだと右の手の親指の甲をはすに切り込んだ。\
     幸ナイフが小さいのと、親指の骨が堅かったので、今だに親指は手に付いている。しかし創痕は死ぬまで消えぬ。
     "};
+    #[strings::skip]
+    let character_style = mplusfonts::style::BitmapFontStyleBuilder::new()
+        .font(&bitmap_font).text_color(ColorType::WHITE).build();
+    let textbox_style = embtext::style::TextBoxStyleBuilder::new()
+        .alignment(embtext::alignment::HorizontalAlignment::Left)
+        .vertical_alignment(embtext::alignment::VerticalAlignment::Top).build();
     embtext::TextBox::with_textbox_style(str_text,
         target.bounding_box(), character_style, textbox_style).draw(target)?;
     Ok(())
