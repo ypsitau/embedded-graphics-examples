@@ -17,6 +17,7 @@ pub mod text_alignment;
 pub mod text_custom_font;
 pub mod text_extended_characters;
 pub mod text_fonts;
+pub mod text_mplusfonts;
 pub mod text_multiline;
 pub mod text_styles;
 pub mod text_textbox;
