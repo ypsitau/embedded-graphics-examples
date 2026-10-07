@@ -10,7 +10,8 @@ mod common;
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples::primitives_stroke_alignment as example;
 use embedded_hal_1::digital::InputPin as _;
-use embedded_hal_async::{delay::DelayNs as _, digital::Wait as _};
+use embedded_hal_async::digital::Wait as _;
+use embedded_hal_async::delay::DelayNs as _;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
