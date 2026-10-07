@@ -15,7 +15,8 @@ where
     mplusfonts::color::Colormap<ColorType, 16>: mplusfonts::color::Linear<ColorType>,
 {
     let str_text = indoc::indoc! {"
-    親譲りの無鉄砲で小供の時から損ばかりしている。小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜かした事がある。\
+    親譲りの無鉄砲で小供の時から損ばかりしている。\
+    小学校に居る時分学校の二階から飛び降りて一週間ほど腰を抜かした事がある。\
     なぜそんな無闇をしたと聞く人があるかも知れぬ。別段深い理由でもない。\
     "};
     target.clear(ColorType::BLACK)?;
@@ -35,7 +36,8 @@ where
         let character_style = mplusfonts::style::BitmapFontStyleBuilder::new()
             .font(font).text_color(ColorType::WHITE).build();
         embtext::TextBox::with_textbox_style(str_text,
-            target.bounding_box().translate(Point::new(0, y_offset)), character_style, textbox_style).draw(target)?;
+            target.bounding_box().translate(Point::new(0, y_offset)),
+            character_style, textbox_style).draw(target)?;
         y_offset += 60;
     }
     Ok(())
