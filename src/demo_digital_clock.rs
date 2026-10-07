@@ -10,7 +10,7 @@ use embedded_hal as hal;
 use heapless::String;
 
 /// Draws a digital clock with the current local time to the specified display
-pub fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
+pub async fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut fn_get_time: FnGetTime, mut fn_interval: FnInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,

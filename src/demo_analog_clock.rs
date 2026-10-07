@@ -17,7 +17,7 @@ use micromath::F32Ext;
 
 use embedded_graphics::mono_font::ascii as fonts;
 
-pub fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
+pub async fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut fn_get_time: FnGetTime, mut fn_interval: FnInterval)
 -> Result<(), DrawTarget::Error>
 where

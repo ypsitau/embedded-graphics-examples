@@ -6,7 +6,7 @@ use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_hal as hal;
 
-pub fn run<ColorType, DrawTarget, DelayNs, FnInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut fn_interval: FnInterval)
+pub async fn run<ColorType, DrawTarget, DelayNs, FnInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut fn_interval: FnInterval)
     -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>, 

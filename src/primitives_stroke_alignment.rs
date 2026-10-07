@@ -19,7 +19,7 @@ pub enum Event {
 const SIZE: u32 = 50;
 const PADDING: u32 = 32;
 
-pub fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
+pub async fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut fn_interval: FnInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,

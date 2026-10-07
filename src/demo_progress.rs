@@ -9,7 +9,7 @@ use embedded_graphics::mono_font::ascii as eg_fonts;
 use embedded_hal as hal;
 use heapless::String;
 
-pub fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
+pub async fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut fn_interval: FnInterval) -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
