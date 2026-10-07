@@ -6,7 +6,7 @@ use embedded_graphics_examples::demo_pacman as example;
 mod common;
 
 fn main() -> Result<(), std::convert::Infallible> {
-    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb565>::new(Size::new(240, 320));
+    let mut target = eg_sim::SimulatorDisplay::<eg::pixelcolor::Rgb888>::new(Size::new(240, 320));
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
     let mut window = eg_sim::Window::new("demo_pacman", &output_settings);
     example::run(&mut target, common::ThreadDelay, |target| {
