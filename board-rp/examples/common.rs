@@ -4,6 +4,7 @@ mod emb {
     pub use embassy_time as time;
 }
 use embedded_hal_1 as hal;
+use embedded_hal_async as hal_async;
 
 use core::cell::RefCell;
 
@@ -19,24 +20,25 @@ pub type BlockingMutexNoop<T> =
 
 pub fn init_board<'d, DisplayModel>(display_model: DisplayModel, orientation: mipidsi::options::Orientation)
     -> (impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb565, Error: core::fmt::Debug>,
-        rp::gpio::Output<'d>, impl hal::i2c::I2c)
+        impl hal::digital::OutputPin,
+        impl hal::digital::InputPin + hal_async::digital::Wait,
+        impl hal::i2c::I2c)
 where
     DisplayModel: mipidsi::models::Model<ColorFormat = eg::pixelcolor::Rgb565>,
 {
-    let (spi_display, pin_display_reset, pin_display_dc, pin_display_bl, i2c_dev) = {
+    let (spi_display, pin_display_reset, pin_display_dc, pin_display_bl, pin_sw, i2c_dev) = {
         let p = rp::init(Default::default());
         let mutex_spi = {
-            let pin_clk = p.PIN_10;
-            let pin_mosi = p.PIN_11;
-            let pin_miso = p.PIN_12;
+            let pin_clk = p.PIN_14;
+            let pin_mosi = p.PIN_15;
             type Spi = rp::spi::Spi<'static, rp::peripherals::SPI1, rp::spi::Blocking>;
             static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<Spi>>> = StaticCell::new();
             STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
-                Spi::new_blocking(p.SPI1, pin_clk, pin_mosi, pin_miso, Default::default()))))
+                Spi::new_blocking_txonly(p.SPI1, pin_clk, pin_mosi, Default::default()))))
         };
         let mutex_i2c0 = {
-            let pin_sda = p.PIN_16;
-            let pin_scl = p.PIN_17;
+            let pin_sda = p.PIN_8;
+            let pin_scl = p.PIN_9;
             let mut config = rp::i2c::Config::default();
             config.frequency = 400_000;
             type I2c0 = rp::i2c::I2c<'static, rp::peripherals::I2C0, rp::i2c::Blocking>;
@@ -46,17 +48,18 @@ where
         };
         let i2c_dev = emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0);
         let spi_display = {
-            let pin_cs = rp::gpio::Output::new(p.PIN_8, rp::gpio::Level::High);
+            let pin_cs = rp::gpio::Output::new(p.PIN_12, rp::gpio::Level::High);
             let mut config = rp::spi::Config::default();
             config.frequency = 64_000_000;
             config.phase = rp::spi::Phase::CaptureOnSecondTransition;
             config.polarity = rp::spi::Polarity::IdleHigh;
             emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi, pin_cs, config)
         };
-        let pin_display_reset = rp::gpio::Output::new(p.PIN_6, rp::gpio::Level::Low);
-        let pin_display_dc = rp::gpio::Output::new(p.PIN_7, rp::gpio::Level::Low);
-        let pin_display_bl = rp::gpio::Output::new(p.PIN_9, rp::gpio::Level::High);
-        (spi_display, pin_display_reset, pin_display_dc, pin_display_bl, i2c_dev)
+        let pin_display_reset = rp::gpio::Output::new(p.PIN_10, rp::gpio::Level::Low);
+        let pin_display_dc = rp::gpio::Output::new(p.PIN_11, rp::gpio::Level::Low);
+        let pin_display_bl = rp::gpio::Output::new(p.PIN_13, rp::gpio::Level::High);
+        let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
+        (spi_display, pin_display_reset, pin_display_dc, pin_display_bl, pin_sw, i2c_dev)
     };
     let display = {
         use mipidsi::options::{ColorOrder, ColorInversion};
@@ -77,5 +80,5 @@ where
             .init(&mut emb::time::Delay)
             .unwrap()
     };
-    (display, pin_display_bl, i2c_dev)
+    (display, pin_display_bl, pin_sw, i2c_dev)
 }
