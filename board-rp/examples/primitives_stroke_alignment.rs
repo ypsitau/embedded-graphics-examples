@@ -2,17 +2,33 @@
 #![no_main]
 mod emb {
     pub use embassy_executor as executor;
+    pub use embassy_futures as futures;
     pub use embassy_time as time;
 }
 mod common;
 
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples::primitives_stroke_alignment as example;
+use embedded_hal_1::digital::InputPin as _;
+use embedded_hal_async::{delay::DelayNs as _, digital::Wait as _};
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let (mut display, _pin_display_bl, pin_sw, _i2c_dev) = common::init_board(mipidsi::models::ST7789, orientation);
-    
-    example::run(&mut display, emb::time::Delay, |_| { example::Event::None } ).await.unwrap();
+    let (mut display, _pin_display_bl, mut pin_sw, _i2c_dev) = common::init_board(mipidsi::models::ST7789, orientation);
+    let event = common::BlockingMutexNoop::new(core::cell::Cell::new(example::Event::None));
+    let mut debounce_delay = emb::time::Delay;
+    let task_sw = async {
+        loop {
+            pin_sw.wait_for_any_edge().await.unwrap();
+            if pin_sw.is_low().unwrap() {
+                event.lock(|e| e.set(example::Event::MouseButtonDown));
+            }
+            debounce_delay.delay_ms(50).await;
+        }
+    };
+    let task_example = example::run(&mut display, emb::time::Delay, |_| {
+        event.lock(|e| e.replace(example::Event::None))
+    });
+    emb::futures::join::join(task_sw, task_example).await;
 }

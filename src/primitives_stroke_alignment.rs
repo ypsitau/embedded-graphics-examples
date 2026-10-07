@@ -10,6 +10,7 @@ use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::ascii as eg_fonts;
 use embedded_hal_async as hal_async;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Event {
     None,
     Quit,

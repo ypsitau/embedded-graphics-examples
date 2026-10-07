@@ -15,6 +15,8 @@ use embassy_rp as rp;
 
 use embedded_graphics as eg;
 
+//pub type AsyncMutexNoop<T> =
+//    emb::sync::mutex::Mutex<emb::sync::blocking_mutex::raw::NoopRawMutex, T>;
 pub type BlockingMutexNoop<T> =
     emb::sync::blocking_mutex::Mutex<emb::sync::blocking_mutex::raw::NoopRawMutex, T>;
 
