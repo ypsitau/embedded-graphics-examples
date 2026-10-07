@@ -19,5 +19,5 @@ async fn main(_spawner: emb::executor::Spawner) {
         let (hour, minute, second) = rtc.read();
         (hour, minute, second)
     };
-    example::run(&mut display, emb::time::Delay, fn_get_time, |_| { false }).unwrap();
+    example::run(&mut display, emb::time::Delay, fn_get_time, |_| { false }).await.unwrap();
 }
