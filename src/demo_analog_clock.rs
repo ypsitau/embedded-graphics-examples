@@ -17,20 +17,6 @@ use micromath::F32Ext;
 
 use embedded_graphics::mono_font::ascii as fonts;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Time {
-    pub hour: u8,
-    pub minute: u8,
-    pub second: u8,
-}
-
-impl Time {
-    /// Creates a new `Time` instance.
-    pub fn new(hour: u8, minute: u8, second: u8) -> Self {
-        Self { hour, minute, second }
-    }
-}
-
 pub fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut fn_get_time: FnGetTime, mut fn_interval: FnInterval)
 -> Result<(), DrawTarget::Error>
@@ -38,7 +24,7 @@ where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
-    FnGetTime: FnMut() -> Time,
+    FnGetTime: FnMut() -> (u8, u8, u8),
     FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     /// The margin between the clock face and the display border.
@@ -60,11 +46,12 @@ where
         }
         time_prev = Some(time_cur);
         // Calculate the position of the three clock hands in radians.
-        let hour_radian = hour_to_radian(time_cur.hour as u32);
-        let minute_radian = sexagesimal_to_radian(time_cur.minute as u32);
-        let second_radian = sexagesimal_to_radian(time_cur.second as u32);
+        let (hour, minute, second) = time_cur;
+        let hour_radian = hour_to_radian(hour as u32);
+        let minute_radian = sexagesimal_to_radian(minute as u32);
+        let second_radian = sexagesimal_to_radian(second as u32);
         let mut str_time: String<16> = String::new();
-        write!(str_time, "{:02}:{:02}:{:02}", time_cur.hour, time_cur.minute, time_cur.second).unwrap();
+        write!(str_time, "{:02}:{:02}:{:02}", hour, minute, second).unwrap();
         //target.clear(ColorType::BLACK)?;
         circle_clock_face.bounding_box().into_styled(style_erase).draw(target)?;
         draw_face(target, &circle_clock_face)?;

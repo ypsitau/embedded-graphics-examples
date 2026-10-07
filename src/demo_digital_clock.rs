@@ -9,20 +9,6 @@ use embedded_graphics::prelude::*;
 use embedded_hal as hal;
 use heapless::String;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Time {
-    pub hour: u8,
-    pub minute: u8,
-    pub second: u8,
-}
-
-impl Time {
-    /// Creates a new `Time` instance.
-    pub fn new(hour: u8, minute: u8, second: u8) -> Self {
-        Self { hour, minute, second }
-    }
-}
-
 /// Draws a digital clock with the current local time to the specified display
 pub fn run<DrawTarget, ColorType, DelayNs, FnGetTime, FnInterval>(target: &mut DrawTarget,
     mut delay: DelayNs, mut fn_get_time: FnGetTime, mut fn_interval: FnInterval) -> Result<(), DrawTarget::Error>
@@ -30,7 +16,7 @@ where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
     DelayNs: hal::delay::DelayNs,
-    FnGetTime: FnMut() -> Time,
+    FnGetTime: FnMut() -> (u8, u8, u8),
     FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     let character_style = SevenSegmentStyleBuilder::new()
@@ -54,7 +40,8 @@ where
         sbuf.clear();
         eg::text::Text::with_text_style("ABCDEFGHI", target.bounding_box().center() - Point::new(0, 4),
             character_style, text_style_bottom).draw(target)?;
-        write!(sbuf, "{:02}:{:02}:{:02}", time_cur.hour, time_cur.minute, time_cur.second).unwrap();
+        let (hour, minute, second) = time_cur;
+        write!(sbuf, "{:02}:{:02}:{:02}", hour, minute, second).unwrap();
         eg::text::Text::with_text_style(&sbuf, target.bounding_box().center() + Point::new(0, 4),
             character_style, text_style_top).draw(target)?;
         if fn_interval(target) { break 'running; }

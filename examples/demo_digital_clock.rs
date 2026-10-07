@@ -12,7 +12,7 @@ fn main() -> Result<(), core::convert::Infallible> {
     let fn_get_time = || {
         use chrono::prelude::*;
         let now = chrono::Local::now();
-        example::Time::new(now.hour() as u8, now.minute() as u8, now.second() as u8)
+        (now.hour() as u8, now.minute() as u8, now.second() as u8)
     };
     example::run(&mut target, common::ThreadDelay, fn_get_time,
         |target| {
