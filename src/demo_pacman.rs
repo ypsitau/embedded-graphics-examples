@@ -4,14 +4,14 @@
 
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
-use embedded_hal as hal;
+use embedded_hal_async as hal_async;
 
 pub async fn run<ColorType, DrawTarget, DelayNs, FnInterval>(target: &mut DrawTarget, mut delay: DelayNs, mut fn_interval: FnInterval)
     -> Result<(), DrawTarget::Error>
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>, 
     ColorType: eg::pixelcolor::RgbColor,
-    DelayNs: hal::delay::DelayNs,
+    DelayNs: hal_async::delay::DelayNs,
     FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     const STEPS: i32 = 10;
@@ -37,7 +37,7 @@ where
             .into_styled(style_eye).draw(target)?;
         istep = (istep + 1) % (2 * STEPS + 1);
         if fn_interval(target) { break; }
-        delay.delay_ms(50); // 50 ms delay
+        delay.delay_ms(50).await; // 50 ms delay
     }
     Ok(())
 }

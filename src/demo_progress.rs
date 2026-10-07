@@ -6,7 +6,7 @@ use core::fmt::Write as _;
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::ascii as eg_fonts;
-use embedded_hal as hal;
+use embedded_hal_async as hal_async;
 use heapless::String;
 
 pub async fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTarget,
@@ -14,7 +14,7 @@ pub async fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTa
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
-    DelayNs: hal::delay::DelayNs,
+    DelayNs: hal_async::delay::DelayNs,
     FnInterval: FnMut(&mut DrawTarget) -> bool,
 {
     let center = target.bounding_box().center();
@@ -36,7 +36,7 @@ where
         write!(sbuf, "{}%", progress).unwrap();
         eg::text::Text::with_text_style(&sbuf, center, character_style, text_style).draw(target)?;
         if fn_interval(target) { break 'running; }
-        delay.delay_ms(50);
+        delay.delay_ms(50).await;
         progress = (progress + 1) % 101;
     }
     Ok(())

@@ -8,7 +8,7 @@
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_graphics::mono_font::ascii as eg_fonts;
-use embedded_hal as hal;
+use embedded_hal_async as hal_async;
 
 pub enum Event {
     None,
@@ -24,7 +24,7 @@ pub async fn run<DrawTarget, ColorType, DelayNs, FnInterval>(target: &mut DrawTa
 where
     DrawTarget: eg::draw_target::DrawTarget<Color = ColorType>,
     ColorType: eg::pixelcolor::RgbColor,
-    DelayNs: hal::delay::DelayNs,
+    DelayNs: hal_async::delay::DelayNs,
     FnInterval: FnMut(&mut DrawTarget) -> Event,
 {
     let bbox = target.bounding_box();
@@ -72,7 +72,7 @@ where
                     break 'wait_event;
                 }
             }
-            delay.delay_ms(20);
+            delay.delay_ms(20).await;
         }
     }
     Ok(())

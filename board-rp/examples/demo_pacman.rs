@@ -33,5 +33,5 @@ async fn main(_spawner: emb::executor::Spawner) {
             let area = eg::primitives::Rectangle::new(Point::zero(), framebuf.size());
             display.fill_contiguous(&area, framebuf.data.iter().copied()).unwrap();
             false
-        }).unwrap();
+        }).await.unwrap();
 }

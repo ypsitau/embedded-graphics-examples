@@ -13,5 +13,6 @@ use embedded_graphics_examples::primitives_stroke_alignment as example;
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
     let (mut display, _pin_display_bl, pin_sw, _i2c_dev) = common::init_board(mipidsi::models::ST7789, orientation);
+    
     example::run(&mut display, emb::time::Delay, |_| { example::Event::None } ).await.unwrap();
 }
