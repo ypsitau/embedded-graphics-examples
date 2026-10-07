@@ -15,9 +15,9 @@ async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
     let (mut display, _pin_display_bl, mut i2c_dev) = common::init_board(mipidsi::models::ST7789, orientation);
     let mut rtc = ds3231::Ds3231::new(&mut i2c_dev);
-    let fn_get_time = || -> example::Time {
+    let fn_get_time = || {
         let (hour, minute, second) = rtc.read();
-        example::Time::new(hour, minute, second)
+        (hour, minute, second)
     };
-    example::run(&mut display, emb::time::Delay, fn_get_time, |_| -> bool { false }).unwrap();
+    example::run(&mut display, emb::time::Delay, fn_get_time, |_| { false }).unwrap();
 }

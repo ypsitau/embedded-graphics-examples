@@ -29,7 +29,7 @@ async fn main(_spawner: emb::executor::Spawner) {
     };
     //let mut framebuf = create_framebuf::<DisplayModel>();
     example::run(&mut framebuf, emb::time::Delay,
-        |framebuf| -> bool {
+        |framebuf| {
             let area = eg::primitives::Rectangle::new(Point::zero(), framebuf.size());
             display.fill_contiguous(&area, framebuf.data.iter().copied()).unwrap();
             false
