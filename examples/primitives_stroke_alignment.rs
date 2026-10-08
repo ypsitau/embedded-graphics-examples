@@ -1,4 +1,4 @@
-mod common;
+mod util;
 
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
@@ -11,7 +11,7 @@ async fn main() -> Result<(), std::convert::Infallible> {
     let output_settings = eg_sim::OutputSettingsBuilder::new().scale(2).build();
     let mut window = eg_sim::Window::new("primitives_stroke_alignment", &output_settings);
     type Event = example::Event;
-    example::run(&mut target, common::ThreadDelay, |target| -> Event {
+    example::run(&mut target, util::ThreadDelay, |target| -> Event {
         window.update(target);
         for event in window.events() {
             match event {

@@ -1,4 +1,4 @@
-mod common;
+mod util;
 
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
@@ -16,7 +16,7 @@ async fn main() -> Result<(), core::convert::Infallible> {
         let now = chrono::Local::now();
         (now.hour() as u8, now.minute() as u8, now.second() as u8)
     };
-    example::run(&mut target, common::ThreadDelay, fn_get_time,
+    example::run(&mut target, util::ThreadDelay, fn_get_time,
         |target| {
             window.update(target);
             window.events().any(|e| e == eg_sim::SimulatorEvent::Quit)
