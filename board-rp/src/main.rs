@@ -2,19 +2,15 @@
 #![no_main]
 mod emb {
     pub use embassy_executor as executor;
-    pub use embassy_time as time;
 }
-use {defmt_rtt as _, panic_probe as _};
-use embedded_graphics_examples as examples;
 
-mod common;
+use {defmt_rtt as _, panic_probe as _};
+use embedded_graphics_examples::hello_world as example;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
-    let orientation = mipidsi::options::Orientation::new()
-        .rotate(mipidsi::options::Rotation::Deg90).flip_vertical();
-    let (mut display, _pin_display_bl) = common::init_display(mipidsi::models::ST7789, orientation);
-    examples::primitives_fill::show(&mut display).unwrap();
-    //examples::demo_pacman::run(&mut display, emb::time::Delay, |_| -> bool { false }).unwrap();
+    let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg90);
+    let mut board = board_rp::init_board_with_mipidsi::<0, _>(mipidsi::models::ST7789, orientation);
+    example::show(&mut board.display).unwrap();
     core::future::pending::<()>().await;
 }

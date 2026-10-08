@@ -3,16 +3,15 @@
 mod emb {
     pub use embassy_executor as executor;
 }
-mod common;
 
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples::hello_world_mono as example;
-use common::Flushable as _;
+use board_rp::Flushable as _;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let rotation = ssd1306::rotation::DisplayRotation::Rotate0;
-    let mut board = common::init_board_with_ssd1306::<0>(rotation);
+    let mut board = board_rp::init_board_with_ssd1306::<0>(rotation);
     example::show(&mut board.display).unwrap();
     board.display.flush().unwrap();
     core::future::pending::<()>().await;

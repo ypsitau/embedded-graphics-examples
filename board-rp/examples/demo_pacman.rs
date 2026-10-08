@@ -4,7 +4,6 @@ mod emb {
     pub use embassy_executor as executor;
     pub use embassy_time as time;
 }
-mod common;
 
 use {defmt_rtt as _, embedded_graphics::draw_target::DrawTarget, panic_probe as _};
 use embedded_graphics_examples::demo_pacman as example;
@@ -18,7 +17,7 @@ type ColorType = eg::pixelcolor::Rgb565;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let mut board = common::init_board_with_mipidsi::<0, _>(DisplayModel, orientation);
+    let mut board = board_rp::init_board_with_mipidsi::<0, _>(DisplayModel, orientation);
     let mut framebuf = {
         use mipidsi::models::Model as _;
         const DISPLAY_SIZE: (u16, u16) = DisplayModel::FRAMEBUFFER_SIZE;

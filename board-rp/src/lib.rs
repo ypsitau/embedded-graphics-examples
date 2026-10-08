@@ -1,9 +1,10 @@
+#![no_std]
 mod emb {
     pub use embassy_embedded_hal as hal;
     pub use embassy_sync as sync;
     pub use embassy_time as time;
 }
-use embassy_embedded_hal::shared_bus::asynch::i2c;
+//use embassy_embedded_hal::shared_bus::asynch::i2c;
 use embedded_hal_1 as hal;
 use embedded_hal_async as hal_async;
 
