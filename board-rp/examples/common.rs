@@ -104,7 +104,7 @@ pub struct BoardWithSSD1306<const N_I2C_DEVS: usize, Display, I2c, InputPin> {
 }
 
 #[allow(dead_code)]
-pub fn init_board_with_ssd1306<'d, const N_I2C_DEVS: usize>()
+pub fn init_board_with_ssd1306<'d, const N_I2C_DEVS: usize>(rotation: ssd1306::rotation::DisplayRotation)
     -> BoardWithSSD1306<
         N_I2C_DEVS,
         impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor, Error: core::fmt::Debug>,
@@ -132,7 +132,6 @@ pub fn init_board_with_ssd1306<'d, const N_I2C_DEVS: usize>()
     let display = {
         let interface = ssd1306::I2CDisplayInterface::new(i2c_ssd1306);
         let size = ssd1306::size::DisplaySize128x64;
-        let rotation = ssd1306::rotation::DisplayRotation::Rotate0;
         ssd1306::Ssd1306::new(interface, size, rotation).into_buffered_graphics_mode()
     };
     BoardWithSSD1306 { display, pin_sw, i2c_devs, }
