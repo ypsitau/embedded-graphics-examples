@@ -13,7 +13,7 @@ use embedded_graphics_examples::demo_digital_clock as example;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg90);
-    let mut board = common::init_board_new::<1, _>(mipidsi::models::ST7789, orientation);
+    let mut board = common::init_board_with_mipidsi::<1, _>(mipidsi::models::ST7789, orientation);
     let mut rtc = ds3231::Ds3231::new(&mut board.i2c_devs[0]);
     let fn_get_time = || {
         let (hour, minute, second) = rtc.read();
