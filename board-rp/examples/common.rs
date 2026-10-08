@@ -97,6 +97,23 @@ where
 }
 
 #[allow(dead_code)]
+pub trait Flushable {
+    type Error: core::fmt::Debug;
+    fn flush(&mut self) -> Result<(), Self::Error>;
+}
+
+impl<DI, SIZE> Flushable for ssd1306::Ssd1306<DI, SIZE, ssd1306::mode::BufferedGraphicsMode<SIZE>>
+where
+    DI: ssd1306::prelude::WriteOnlyDataCommand,
+    SIZE: ssd1306::size::DisplaySize,
+{
+    type Error = <Self as ssd1306::prelude::DisplayConfig>::Error;
+    fn flush(&mut self) -> Result<(), Self::Error> {
+        ssd1306::Ssd1306::flush(self)
+    }
+}
+
+#[allow(dead_code)]
 pub struct BoardWithSSD1306<const N_I2C_DEVS: usize, Display, I2c, InputPin> {
     pub display: Display,
     pub pin_sw: InputPin,
@@ -107,11 +124,12 @@ pub struct BoardWithSSD1306<const N_I2C_DEVS: usize, Display, I2c, InputPin> {
 pub fn init_board_with_ssd1306<'d, const N_I2C_DEVS: usize>(rotation: ssd1306::rotation::DisplayRotation)
     -> BoardWithSSD1306<
         N_I2C_DEVS,
-        impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor, Error: core::fmt::Debug>,
+        impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor, Error: core::fmt::Debug> + Flushable,
         impl hal::i2c::I2c,
         impl hal::digital::InputPin + hal_async::digital::Wait,
     >
 {
+    use ssd1306::prelude::*;
     let (pin_sw, i2c_ssd1306, i2c_devs) = {
         let p = rp::init(Default::default());
         let mutex_i2c0 = {
@@ -129,10 +147,11 @@ pub fn init_board_with_ssd1306<'d, const N_I2C_DEVS: usize>(rotation: ssd1306::r
         let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
         (pin_sw, i2c_ssd1306, i2c_devs)
     };
-    let display = {
+    let mut display = {
         let interface = ssd1306::I2CDisplayInterface::new(i2c_ssd1306);
         let size = ssd1306::size::DisplaySize128x64;
         ssd1306::Ssd1306::new(interface, size, rotation).into_buffered_graphics_mode()
     };
+    display.init().unwrap();
     BoardWithSSD1306 { display, pin_sw, i2c_devs, }
 }
