@@ -29,7 +29,7 @@ pub struct BoardWithMipidsi<const N_I2C_DEVS: usize, Display, I2c, OutputPin, In
 }
 
 #[allow(dead_code)]
-pub fn init_board_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_model: DisplayModel, orientation: mipidsi::options::Orientation)
+pub fn init_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_model: DisplayModel, orientation: mipidsi::options::Orientation)
     -> BoardWithMipidsi<
         N_I2C_DEVS,
         impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb565, Error: core::fmt::Debug>,
@@ -122,7 +122,7 @@ pub struct BoardWithSSD1306<const N_I2C_DEVS: usize, Display, I2c, InputPin> {
 }
 
 #[allow(dead_code)]
-pub fn init_board_with_ssd1306<'d, const N_I2C_DEVS: usize>(rotation: ssd1306::rotation::DisplayRotation)
+pub fn init_with_ssd1306<'d, const N_I2C_DEVS: usize>(rotation: ssd1306::rotation::DisplayRotation)
     -> BoardWithSSD1306<
         N_I2C_DEVS,
         impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::BinaryColor, Error: core::fmt::Debug> + Flushable,

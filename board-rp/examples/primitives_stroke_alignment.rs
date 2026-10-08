@@ -15,7 +15,7 @@ use embedded_hal_async::delay::DelayNs as _;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let mut board = board_rp::init_board_with_mipidsi::<0, _>(mipidsi::models::ST7789, orientation);
+    let mut board = board_rp::init_with_mipidsi::<0, _>(mipidsi::models::ST7789, orientation);
     let event = core::cell::Cell::new(example::Event::None);
     let mut debounce_delay = emb::time::Delay;
     let task_sw = async {
