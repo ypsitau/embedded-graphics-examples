@@ -2,6 +2,7 @@
 
 pub mod demo_analog_clock;
 pub mod demo_digital_clock;
+pub mod demo_digital_clock_mono;
 pub mod demo_pacman;
 pub mod demo_progress;
 pub mod hello_world;

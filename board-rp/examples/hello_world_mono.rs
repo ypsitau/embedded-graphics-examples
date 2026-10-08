@@ -7,10 +7,10 @@ mod common;
 
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples::hello_world_mono as example;
+use common::Flushable as _;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
-    use common::Flushable;
     let rotation = ssd1306::rotation::DisplayRotation::Rotate0;
     let mut board = common::init_board_with_ssd1306::<0>(rotation);
     example::show(&mut board.display).unwrap();
