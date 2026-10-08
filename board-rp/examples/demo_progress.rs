@@ -12,6 +12,6 @@ use embedded_graphics_examples::demo_progress as example;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let (mut display, _pin_display_bl, _pin_sw, _i2c_dev) = common::init_board(mipidsi::models::ST7789, orientation);
-    example::run(&mut display, emb::time::Delay, |_| { false }).await.unwrap();
+    let mut board = common::init_board_new::<0, _>(mipidsi::models::ST7789, orientation);
+    example::run(&mut board.display, emb::time::Delay, |_| { false }).await.unwrap();
 }

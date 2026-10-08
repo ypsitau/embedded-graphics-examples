@@ -18,7 +18,7 @@ type ColorType = eg::pixelcolor::Rgb565;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let (mut display, _pin_display_bl, _pin_sw, _i2c_dev) = common::init_board(DisplayModel, orientation);
+    let mut board = common::init_board_new::<0, _>(DisplayModel, orientation);
     let mut framebuf = {
         use mipidsi::models::Model as _;
         const DISPLAY_SIZE: (u16, u16) = DisplayModel::FRAMEBUFFER_SIZE;
@@ -31,7 +31,7 @@ async fn main(_spawner: emb::executor::Spawner) {
     example::run(&mut framebuf, emb::time::Delay,
         |framebuf| {
             let area = eg::primitives::Rectangle::new(Point::zero(), framebuf.size());
-            display.fill_contiguous(&area, framebuf.data.iter().copied()).unwrap();
+            board.display.fill_contiguous(&area, framebuf.data.iter().copied()).unwrap();
             false
         }).await.unwrap();
 }
