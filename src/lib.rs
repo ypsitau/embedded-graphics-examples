@@ -5,6 +5,7 @@ pub mod demo_digital_clock;
 pub mod demo_pacman;
 pub mod demo_progress;
 pub mod hello_world;
+pub mod hello_world_mono;
 pub mod image_bmp;
 pub mod image_sub_image;
 pub mod image_tga;
