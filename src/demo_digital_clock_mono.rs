@@ -3,10 +3,10 @@
 //! An example displaying a digital clock using the `eg-seven-segment` crate.
 
 use core::fmt::Write as _;
-use eg_seven_segment::SevenSegmentStyleBuilder;
 use embedded_graphics as eg;
 use embedded_graphics::prelude::*;
 use embedded_hal_async as hal_async;
+use eg_seven_segment::SevenSegmentStyleBuilder;
 use heapless::String;
 
 type ColorType = eg::pixelcolor::BinaryColor;
