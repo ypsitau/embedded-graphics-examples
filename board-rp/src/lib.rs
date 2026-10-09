@@ -7,14 +7,9 @@ mod emb {
 //use embassy_embedded_hal::shared_bus::asynch::i2c;
 use embedded_hal_1 as hal;
 use embedded_hal_async as hal_async;
-
 use core::cell::RefCell;
-
 use static_cell::StaticCell;
-use {defmt_rtt as _, panic_probe as _};
-
 use embassy_rp as rp;
-
 use embedded_graphics as eg;
 
 pub type BlockingMutexNoop<T> =
