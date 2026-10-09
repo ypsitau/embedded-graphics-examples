@@ -1,6 +1,6 @@
 [package]
 edition = "2024"
-name = "hoge"
+name = "board-esp"
 version = "0.1.0"
 license = "MIT or Apache-2.0"
 rust-version = "1.88"
@@ -35,6 +35,7 @@ esp-rtos = { version = "0.3.0", features = ["embassy", "log-04", "esp32"] }
 
 ssd1306 = { version = "0.10.0", features = ["async"] }
 embedded-graphics = { version = "0.8.2" }
+embedded-graphics-examples = { path = ".." }
 mipidsi = "0.10.0"
 
 [profile.dev]
