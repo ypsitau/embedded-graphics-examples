@@ -44,7 +44,7 @@ where
     let mut pos = eg::text::Text::with_text_style("12:34", pos, character_style, text_style).draw(target)?;
     pos.x += 10;
     let character_style = SevenSegmentStyleBuilder::new()
-        .digit_size(Size::new(30, 60)).digit_spacing(4).segment_width(8)
+        .digit_size(Size::new(26, 60)).digit_spacing(4).segment_width(8)
         .segment_color(ColorType::CSS_LIGHT_GREEN)
         .inactive_segment_color(eg::pixelcolor::Rgb888::new(0, 64, 0).into())
         .build();
