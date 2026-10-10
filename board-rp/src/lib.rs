@@ -1,4 +1,7 @@
 #![no_std]
+pub mod prelude {
+    pub use super::Flushable as _;
+}
 mod emb {
     pub use embassy_embedded_hal as hal;
     pub use embassy_sync as sync;
@@ -35,33 +38,30 @@ pub fn init_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_mode
 where
     DisplayModel: mipidsi::models::Model<ColorFormat = eg::pixelcolor::Rgb565>,
 {
-    let (mutex_spi, mutex_i2c0, pin_display_reset, pin_display_dc, pin_display_cs, pin_display_bl, pin_sw) = {
-        let p = rp::init(Default::default());
-        let mutex_spi = {
-            let pin_clk = p.PIN_14;
-            let pin_mosi = p.PIN_15;
-            type Spi = rp::spi::Spi<'static, rp::peripherals::SPI1, rp::spi::Blocking>;
-            static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<Spi>>> = StaticCell::new();
-            STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
-                Spi::new_blocking_txonly(p.SPI1, pin_clk, pin_mosi, Default::default()))))
-        };
-        let mutex_i2c0 = {
-            let pin_sda = p.PIN_8;
-            let pin_scl = p.PIN_9;
-            let mut config = rp::i2c::Config::default();
-            config.frequency = 400_000;
-            type I2c0 = rp::i2c::I2c<'static, rp::peripherals::I2C0, rp::i2c::Blocking>;
-            static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<I2c0>>> = StaticCell::new();
-            STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
-                I2c0::new_blocking(p.I2C0, pin_scl, pin_sda, config))))
-        };
-        let pin_display_reset = rp::gpio::Output::new(p.PIN_10, rp::gpio::Level::Low);
-        let pin_display_dc = rp::gpio::Output::new(p.PIN_11, rp::gpio::Level::Low);
-        let pin_display_cs = rp::gpio::Output::new(p.PIN_12, rp::gpio::Level::High);
-        let pin_display_bl = rp::gpio::Output::new(p.PIN_13, rp::gpio::Level::High);
-        let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
-        (mutex_spi, mutex_i2c0, pin_display_reset, pin_display_dc, pin_display_cs, pin_display_bl, pin_sw)
+    let p = rp::init(Default::default());
+    let mutex_spi = {
+        let pin_clk = p.PIN_14;
+        let pin_mosi = p.PIN_15;
+        type Spi = rp::spi::Spi<'static, rp::peripherals::SPI1, rp::spi::Blocking>;
+        static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<Spi>>> = StaticCell::new();
+        STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
+            Spi::new_blocking_txonly(p.SPI1, pin_clk, pin_mosi, Default::default()))))
     };
+    let mutex_i2c0 = {
+        let pin_sda = p.PIN_8;
+        let pin_scl = p.PIN_9;
+        let mut config = rp::i2c::Config::default();
+        config.frequency = 400_000;
+        type I2c0 = rp::i2c::I2c<'static, rp::peripherals::I2C0, rp::i2c::Blocking>;
+        static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<I2c0>>> = StaticCell::new();
+        STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
+            I2c0::new_blocking(p.I2C0, pin_scl, pin_sda, config))))
+    };
+    let pin_display_reset = rp::gpio::Output::new(p.PIN_10, rp::gpio::Level::Low);
+    let pin_display_dc = rp::gpio::Output::new(p.PIN_11, rp::gpio::Level::Low);
+    let pin_display_cs = rp::gpio::Output::new(p.PIN_12, rp::gpio::Level::High);
+    let pin_display_bl = rp::gpio::Output::new(p.PIN_13, rp::gpio::Level::High);
+    let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
     let display_interface = {
         let spi_dev = {
             let mut config = rp::spi::Config::default();
@@ -77,12 +77,11 @@ where
         };
         mipidsi::interface::SpiInterface::new(spi_dev, pin_display_dc, spi_buf)
     };
-    use mipidsi::options::{ColorOrder, ColorInversion};
     let display = mipidsi::Builder::new(display_model, display_interface)
         .display_size(240, 320)
-        .color_order(ColorOrder::Rgb)
+        .color_order(mipidsi::options::ColorOrder::Rgb)
         .reset_pin(pin_display_reset)
-        .invert_colors(ColorInversion::Inverted)
+        .invert_colors(mipidsi::options::ColorInversion::Inverted)
         .orientation(orientation)
         .init(&mut emb::time::Delay)
         .unwrap();
@@ -124,25 +123,22 @@ pub fn init_with_ssd1306<'d, const N_I2C_DEVS: usize>(rotation: ssd1306::rotatio
     >
 {
     use ssd1306::prelude::*;
-    let (pin_sw, i2c_ssd1306, i2c_devs) = {
-        let p = rp::init(Default::default());
-        let mutex_i2c0 = {
-            let pin_sda = p.PIN_8;
-            let pin_scl = p.PIN_9;
-            let mut config = rp::i2c::Config::default();
-            config.frequency = 400_000;
-            type I2c0 = rp::i2c::I2c<'static, rp::peripherals::I2C0, rp::i2c::Blocking>;
-            static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<I2c0>>> = StaticCell::new();
-            STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
-                I2c0::new_blocking(p.I2C0, pin_scl, pin_sda, config))))
-        };
-        let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
-        let i2c_ssd1306 = emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0);
-        let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
-        (pin_sw, i2c_ssd1306, i2c_devs)
+    let p = rp::init(Default::default());
+    let mutex_i2c0 = {
+        let pin_sda = p.PIN_8;
+        let pin_scl = p.PIN_9;
+        let mut config = rp::i2c::Config::default();
+        config.frequency = 400_000;
+        type I2c0 = rp::i2c::I2c<'static, rp::peripherals::I2C0, rp::i2c::Blocking>;
+        static STATIC_CELL: StaticCell<BlockingMutexNoop<RefCell<I2c0>>> = StaticCell::new();
+        STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
+            I2c0::new_blocking(p.I2C0, pin_scl, pin_sda, config))))
     };
+    let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
+    let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
     let mut display = {
-        let interface = ssd1306::I2CDisplayInterface::new(i2c_ssd1306);
+        let i2c_dev = emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0);
+        let interface = ssd1306::I2CDisplayInterface::new(i2c_dev);
         let size = ssd1306::size::DisplaySize128x64;
         ssd1306::Ssd1306::new(interface, size, rotation).into_buffered_graphics_mode()
     };

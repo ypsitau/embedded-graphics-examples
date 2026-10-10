@@ -6,7 +6,7 @@ mod emb {
 
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples::hello_world_mono as example;
-use board_rp::Flushable as _;
+use board_rp::prelude::*;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
