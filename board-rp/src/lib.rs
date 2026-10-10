@@ -35,7 +35,7 @@ pub fn init_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_mode
 where
     DisplayModel: mipidsi::models::Model<ColorFormat = eg::pixelcolor::Rgb565>,
 {
-    let (spi_display, pin_display_reset, pin_display_dc, pin_display_bl, pin_sw, i2c_devs) = {
+    let (mutex_spi, mutex_i2c0, pin_display_reset, pin_display_dc, pin_display_cs, pin_display_bl, pin_sw) = {
         let p = rp::init(Default::default());
         let mutex_spi = {
             let pin_clk = p.PIN_14;
@@ -55,22 +55,21 @@ where
             STATIC_CELL.init(BlockingMutexNoop::new(RefCell::new(
                 I2c0::new_blocking(p.I2C0, pin_scl, pin_sda, config))))
         };
+        let pin_display_reset = rp::gpio::Output::new(p.PIN_10, rp::gpio::Level::Low);
+        let pin_display_dc = rp::gpio::Output::new(p.PIN_11, rp::gpio::Level::Low);
+        let pin_display_cs = rp::gpio::Output::new(p.PIN_12, rp::gpio::Level::High);
+        let pin_display_bl = rp::gpio::Output::new(p.PIN_13, rp::gpio::Level::High);
+        let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
+        (mutex_spi, mutex_i2c0, pin_display_reset, pin_display_dc, pin_display_cs, pin_display_bl, pin_sw)
+    };
+    let display = {
         let spi_display = {
-            let pin_cs = rp::gpio::Output::new(p.PIN_12, rp::gpio::Level::High);
             let mut config = rp::spi::Config::default();
             config.frequency = 64_000_000;
             config.phase = rp::spi::Phase::CaptureOnSecondTransition;
             config.polarity = rp::spi::Polarity::IdleHigh;
-            emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi, pin_cs, config)
+            emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi, pin_display_cs, config)
         };
-        let pin_display_reset = rp::gpio::Output::new(p.PIN_10, rp::gpio::Level::Low);
-        let pin_display_dc = rp::gpio::Output::new(p.PIN_11, rp::gpio::Level::Low);
-        let pin_display_bl = rp::gpio::Output::new(p.PIN_13, rp::gpio::Level::High);
-        let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
-        let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
-        (spi_display, pin_display_reset, pin_display_dc, pin_display_bl, pin_sw, i2c_devs)
-    };
-    let display = {
         use mipidsi::options::{ColorOrder, ColorInversion};
         let display_interface = {
             let spi_buf = {
@@ -89,6 +88,7 @@ where
             .init(&mut emb::time::Delay)
             .unwrap()
     };
+    let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
     BoardWithMipidsi { display, pin_display_bl, pin_sw, i2c_devs, }
 }
 
