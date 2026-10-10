@@ -62,32 +62,30 @@ where
         let pin_sw = rp::gpio::Input::new(p.PIN_16, rp::gpio::Pull::Up);
         (mutex_spi, mutex_i2c0, pin_display_reset, pin_display_dc, pin_display_cs, pin_display_bl, pin_sw)
     };
-    let display = {
-        let spi_display = {
+    let display_interface = {
+        let spi_dev = {
             let mut config = rp::spi::Config::default();
             config.frequency = 64_000_000;
             config.phase = rp::spi::Phase::CaptureOnSecondTransition;
             config.polarity = rp::spi::Polarity::IdleHigh;
             emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi, pin_display_cs, config)
         };
-        use mipidsi::options::{ColorOrder, ColorInversion};
-        let display_interface = {
-            let spi_buf = {
-                const SPI_BUF_SIZE: usize = 320;
-                static STATIC_CELL: StaticCell<[u8; SPI_BUF_SIZE]> = StaticCell::new();
-                STATIC_CELL.init([0u8; SPI_BUF_SIZE])
-            };
-            mipidsi::interface::SpiInterface::new(spi_display, pin_display_dc, spi_buf)
+        let spi_buf = {
+            const SPI_BUF_SIZE: usize = 320;
+            static STATIC_CELL: StaticCell<[u8; SPI_BUF_SIZE]> = StaticCell::new();
+            STATIC_CELL.init([0u8; SPI_BUF_SIZE])
         };
-        mipidsi::Builder::new(display_model, display_interface)
-            .display_size(240, 320)
-            .color_order(ColorOrder::Rgb)
-            .reset_pin(pin_display_reset)
-            .invert_colors(ColorInversion::Inverted)
-            .orientation(orientation)
-            .init(&mut emb::time::Delay)
-            .unwrap()
+        mipidsi::interface::SpiInterface::new(spi_dev, pin_display_dc, spi_buf)
     };
+    use mipidsi::options::{ColorOrder, ColorInversion};
+    let display = mipidsi::Builder::new(display_model, display_interface)
+        .display_size(240, 320)
+        .color_order(ColorOrder::Rgb)
+        .reset_pin(pin_display_reset)
+        .invert_colors(ColorInversion::Inverted)
+        .orientation(orientation)
+        .init(&mut emb::time::Delay)
+        .unwrap();
     let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
     BoardWithMipidsi { display, pin_display_bl, pin_sw, i2c_devs, }
 }
