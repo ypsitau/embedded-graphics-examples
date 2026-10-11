@@ -17,7 +17,8 @@ type ColorType = eg::pixelcolor::Rgb565;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let mut board = board_rp::init_with_mipidsi::<0, _>(DisplayModel, orientation);
+    let mut board = board_rp::init_with_mipidsi::<0, _>(DisplayModel, (240, 320),
+        orientation, mipidsi::options::ColorOrder::Rgb, mipidsi::options::ColorInversion::Inverted);
     let mut framebuf = {
         use mipidsi::models::Model as _;
         const DISPLAY_SIZE: (u16, u16) = DisplayModel::FRAMEBUFFER_SIZE;

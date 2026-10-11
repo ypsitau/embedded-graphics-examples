@@ -36,38 +36,41 @@ pub fn init_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_mode
 where
     DisplayModel: mipidsi::models::Model<ColorFormat = eg::pixelcolor::Rgb565>,
 {
+    use esp::gpio;
     let p = esp::init(esp::Config::default());
     let timg0 = esp::timer::timg::TimerGroup::new(p.TIMG0);
     let software_interrupt_control =
         esp::interrupt::software::SoftwareInterruptControl::new(p.SW_INTERRUPT);
     esp_rtos::start(timg0.timer0, software_interrupt_control.software_interrupt0);
     let mutex_spi = {
+        type Spi = esp::spi::master::Spi<'static, esp::Blocking>;
         let pin_sck = p.GPIO18;
         let pin_mosi = p.GPIO19;
-        type Spi = esp::spi::master::Spi<'static, esp::Blocking>;
-        let config = esp::spi::master::Config::default().with_frequency(esp::time::Rate::from_mhz(8));
         static STATIC_CELL: StaticCell<BlockingMutexCriticalSection<RefCell<Spi>>> = StaticCell::new();
         STATIC_CELL.init(BlockingMutexCriticalSection::new(RefCell::new(
-            Spi::new(p.SPI2, config).unwrap().with_sck(pin_sck).with_mosi(pin_mosi))))
+            Spi::new(p.SPI2, Default::default()).unwrap().with_sck(pin_sck).with_mosi(pin_mosi))))
     };
     let mutex_i2c0 = {
-        let (pin_sda, pin_scl) = (p.GPIO23, p.GPIO22);
-        let config = esp::i2c::master::Config::default()
-            .with_frequency(esp::time::Rate::from_khz(400));
         type I2c = esp::i2c::master::I2c<'static, esp::Blocking>;
+        let pin_sda = p.GPIO23;
+        let pin_scl = p.GPIO22;
+        let config = esp::i2c::master::Config::default().with_frequency(esp::time::Rate::from_khz(400));
         static STATIC_CELL: StaticCell<BlockingMutexCriticalSection<RefCell<I2c>>> = StaticCell::new();
         STATIC_CELL.init(BlockingMutexCriticalSection::new(RefCell::new(
             I2c::new(p.I2C0, config).unwrap().with_scl(pin_scl).with_sda(pin_sda))))
     };
-    use esp::gpio;
     let pin_display_reset = gpio::Output::new(p.GPIO4, gpio::Level::High, gpio::OutputConfig::default());
     let pin_display_dc = gpio::Output::new(p.GPIO16, gpio::Level::Low, gpio::OutputConfig::default());
     let pin_display_cs = gpio::Output::new(p.GPIO17, gpio::Level::High, gpio::OutputConfig::default());
     let pin_display_bl = gpio::Output::new(p.GPIO5, gpio::Level::High, gpio::OutputConfig::default());
     let pin_sw = gpio::Input::new(p.GPIO21, gpio::InputConfig::default().with_pull(gpio::Pull::Up));
-    let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
-    let display_interface = {
-        let spi_dev = emb::hal::shared_bus::blocking::spi::SpiDevice::new(mutex_spi, pin_display_cs);
+    let mipidsi_spi_interface = {
+        let spi_dev = {
+            let config = esp::spi::master::Config::default()
+                .with_frequency(esp::time::Rate::from_mhz(8))
+                .with_mode(esp::spi::Mode::_3);
+            emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi, pin_display_cs, config)
+        };
         let spi_buf = {
             const SPI_BUF_SIZE: usize = 320;
             static STATIC_CELL: StaticCell<[u8; SPI_BUF_SIZE]> = StaticCell::new();
@@ -75,7 +78,7 @@ where
         };
         mipidsi::interface::SpiInterface::new(spi_dev, pin_display_dc, spi_buf)
     };
-    let display = mipidsi::Builder::new(display_model, display_interface)
+    let display = mipidsi::Builder::new(display_model, mipidsi_spi_interface)
         .display_size(240, 320)
         .color_order(mipidsi::options::ColorOrder::Rgb)
         .reset_pin(pin_display_reset)
@@ -83,5 +86,6 @@ where
         .orientation(orientation)
         .init(&mut esp::delay::Delay::new())
         .unwrap();
+    let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
     BoardWithMipidsi { display, pin_display_bl, pin_sw, i2c_devs, }
 }

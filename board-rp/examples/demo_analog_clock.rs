@@ -12,7 +12,10 @@ use embedded_graphics_examples::demo_analog_clock as example;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let mut board = board_rp::init_with_mipidsi::<1, _>(mipidsi::models::ST7789, orientation);
+    let color_order = mipidsi::options::ColorOrder::Rgb;
+    let color_inversion = mipidsi::options::ColorInversion::Inverted;
+    let mut board = board_rp::init_with_mipidsi::<1, _>(mipidsi::models::ST7789, (240, 320),
+        orientation, color_order, color_inversion);
     let mut rtc = ds3231::Ds3231::new(&mut board.i2c_devs[0]);
     let fn_get_time = || {
         let (hour, minute, second) = rtc.read();

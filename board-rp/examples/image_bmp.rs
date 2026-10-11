@@ -10,7 +10,8 @@ use embedded_graphics_examples::image_bmp as example;
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
     let orientation = mipidsi::options::Orientation::new().rotate(mipidsi::options::Rotation::Deg0);
-    let mut board = board_rp::init_with_mipidsi::<0, _>(mipidsi::models::ST7789, orientation);
+    let mut board = board_rp::init_with_mipidsi::<0, _>(mipidsi::models::ST7789, (240, 320),
+        orientation, mipidsi::options::ColorOrder::Rgb, mipidsi::options::ColorInversion::Inverted);
     example::show(&mut board.display).unwrap();
     core::future::pending::<()>().await;
 }
