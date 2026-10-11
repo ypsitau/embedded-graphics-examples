@@ -3,13 +3,15 @@
 mod emb {
     pub use embassy_embedded_hal as hal;
     pub use embassy_sync as sync;
+    pub use embassy_time as time;
 }
 use embedded_hal_1 as hal;
 use embedded_hal_async as hal_async;
 use core::cell::RefCell;
 use static_cell::StaticCell;
-use esp_hal as esp;
 use embedded_graphics as eg;
+
+use esp_hal as esp;
 
 esp_bootloader_esp_idf::esp_app_desc!();
 
@@ -25,7 +27,8 @@ pub struct BoardWithMipidsi<const N_I2C_DEVS: usize, Display, I2c, OutputPin, In
 }
 
 #[allow(dead_code)]
-pub fn init_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_model: DisplayModel, orientation: mipidsi::options::Orientation)
+pub fn init_with_mipidsi<'d, const N_I2C_DEVS: usize, DisplayModel>(display_model: DisplayModel, size: (u16, u16), orientation: mipidsi::options::Orientation,
+    color_order: mipidsi::options::ColorOrder, color_inversion: mipidsi::options::ColorInversion)
     -> BoardWithMipidsi<
         N_I2C_DEVS,
         impl eg::draw_target::DrawTarget<Color = eg::pixelcolor::Rgb565, Error: core::fmt::Debug>,
@@ -79,13 +82,9 @@ where
         mipidsi::interface::SpiInterface::new(spi_dev, pin_display_dc, spi_buf)
     };
     let display = mipidsi::Builder::new(display_model, mipidsi_spi_interface)
-        .display_size(240, 320)
-        .color_order(mipidsi::options::ColorOrder::Rgb)
-        .reset_pin(pin_display_reset)
-        .invert_colors(mipidsi::options::ColorInversion::Inverted)
-        .orientation(orientation)
-        .init(&mut esp::delay::Delay::new())
-        .unwrap();
+        .display_size(size.0, size.1).reset_pin(pin_display_reset)
+        .orientation(orientation).color_order(color_order).invert_colors(color_inversion)
+        .init(&mut emb::time::Delay).unwrap();
     let i2c_devs = core::array::from_fn(|_| emb::hal::shared_bus::blocking::i2c::I2cDevice::new(mutex_i2c0));
     BoardWithMipidsi { display, pin_display_bl, pin_sw, i2c_devs, }
 }

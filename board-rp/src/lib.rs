@@ -7,13 +7,13 @@ mod emb {
     pub use embassy_sync as sync;
     pub use embassy_time as time;
 }
-//use embassy_embedded_hal::shared_bus::asynch::i2c;
 use embedded_hal_1 as hal;
 use embedded_hal_async as hal_async;
 use core::cell::RefCell;
 use static_cell::StaticCell;
-use embassy_rp as rp;
 use embedded_graphics as eg;
+
+use embassy_rp as rp;
 
 pub type BlockingMutexNoop<T> =
     emb::sync::blocking_mutex::Mutex<emb::sync::blocking_mutex::raw::NoopRawMutex, T>;
