@@ -40,7 +40,7 @@ where
     DisplayModel: mipidsi::models::Model<ColorFormat = eg::pixelcolor::Rgb565>,
 {
     let p = rp::init(Default::default());
-    let mutex_spi = {
+    let mutex_spi1 = {
         type Spi1 = rp::spi::Spi<'static, rp::peripherals::SPI1, rp::spi::Blocking>;
         let pin_clk = p.PIN_14;
         let pin_mosi = p.PIN_15;
@@ -69,7 +69,7 @@ where
             config.frequency = 64_000_000;
             config.phase = rp::spi::Phase::CaptureOnSecondTransition;
             config.polarity = rp::spi::Polarity::IdleHigh;
-            emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi, pin_display_cs, config)
+            emb::hal::shared_bus::blocking::spi::SpiDeviceWithConfig::new(mutex_spi1, pin_display_cs, config)
         };
         let spi_buf = {
             const SPI_BUF_SIZE: usize = 320;
