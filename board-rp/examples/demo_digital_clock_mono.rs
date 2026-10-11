@@ -12,8 +12,7 @@ use board_rp::prelude::*;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
-    let rotation = ssd1306::rotation::DisplayRotation::Rotate0;
-    let mut board = board_rp::init_with_ssd1306::<1>(rotation);
+    let mut board = board_rp::init_with_ssd1306::<0>(ssd1306::rotation::DisplayRotation::Rotate0);
     let mut rtc = ds3231::Ds3231::new(&mut board.i2c_devs[0]);
     let fn_get_time = || {
         let (hour, minute, second) = rtc.read();
