@@ -4,7 +4,6 @@ mod emb {
     pub use embassy_executor as executor;
     pub use embassy_time as time;
 }
-mod ds3231;
     
 use {defmt_rtt as _, panic_probe as _};
 use embedded_graphics_examples::demo_digital_clock_mono as example;
@@ -12,8 +11,8 @@ use board_rp::prelude::*;
 
 #[emb::executor::main]
 async fn main(_spawner: emb::executor::Spawner) {
-    let mut board = board_rp::init_with_ssd1306::<0>(ssd1306::rotation::DisplayRotation::Rotate0);
-    let mut rtc = ds3231::Ds3231::new(&mut board.i2c_devs[0]);
+    let mut board = board_rp::init_with_ssd1306::<1>(ssd1306::rotation::DisplayRotation::Rotate0);
+    let mut rtc = board_rp::ds3231::Ds3231::new(&mut board.i2c_devs[0]);
     let fn_get_time = || {
         let (hour, minute, second) = rtc.read();
         (hour, minute, second)

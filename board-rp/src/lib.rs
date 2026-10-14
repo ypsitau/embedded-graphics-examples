@@ -1,4 +1,6 @@
 #![no_std]
+
+pub mod ds3231;
 pub mod prelude {
     pub use super::Flushable as _;
 }
